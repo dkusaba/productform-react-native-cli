@@ -1,29 +1,42 @@
 import React, {useState} from 'react';
+import type {PropsWithChildren} from 'react';
 import {KeyboardType, StyleSheet, Text, TextInput, View} from 'react-native';
-import {scaleFontSize, verticalScale} from '../assets/styles/scaling';
 
-interface InputProps {
+import {
+  horizontalScale,
+  scaleFontSize,
+  verticalScale,
+} from '../../util/scaling';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+
+type InputProps = PropsWithChildren<{
   label: string;
   placeholder?: string;
   keyboardType?: KeyboardType;
-  secureTextEntry: boolean;
+  secureTextEntry?: boolean;
   onChangeText: (val: string) => void;
-}
+}>;
 
-function Input(props: InputProps): JSX.Element {
+function Input({
+  label,
+  placeholder = '',
+  keyboardType = 'default',
+  secureTextEntry = false,
+  onChangeText,
+}: InputProps): JSX.Element {
   const [value, setValue] = useState('');
   return (
     <View>
-      <Text style={styles.label}>{props.label}</Text>
+      <Text style={styles.label}>{label}</Text>
       <TextInput
-        placeholder={props.placeholder}
+        placeholder={placeholder}
         style={styles.input}
         value={value}
-        secureTextEntry={props.secureTextEntry}
-        keyboardType={props.keyboardType}
+        secureTextEntry={secureTextEntry}
+        keyboardType={keyboardType}
         onChangeText={val => {
           setValue(val);
-          props.onChangeText(val);
+          onChangeText(val);
         }}
       />
     </View>
@@ -32,23 +45,24 @@ function Input(props: InputProps): JSX.Element {
 
 export default Input;
 
-Input.defaultProps = {
-  placeholder: null,
-  keyboardType: 'default',
-  secureTextEntry: false,
-};
-
 const styles = StyleSheet.create({
   label: {
-    fontFamily: 'Inter',
-    fontWeight: '400',
+    marginTop: verticalScale(12),
+    marginBottom: verticalScale(5),
+    fontFamily: 'Monteserrat',
+    fontWeight: '600',
     fontSize: scaleFontSize(12),
     lineHeight: scaleFontSize(15),
-    color: '#36455A',
+    textTransform: 'uppercase',
+    color: Colors.grayPrimary,
   },
   input: {
+    backgroundColor: Colors.gray900,
+    paddingHorizontal: horizontalScale(6),
     paddingVertical: verticalScale(12),
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(167, 167, 167, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(167, 167, 167, 0.5)',
+    color: Colors.grayPrimary,
+    borderRadius: horizontalScale(10),
   },
 });

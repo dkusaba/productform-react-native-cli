@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: Colors.gray900,
     paddingHorizontal: horizontalScale(6),
-    paddingVertical: verticalScale(12),
+    paddingVertical: verticalScale(8),
     borderWidth: 1,
     borderColor: 'rgba(167, 167, 167, 0.5)',
     color: Colors.grayPrimary,

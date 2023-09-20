@@ -15,3 +15,8 @@ export type SignUpScreenNavigationProp = StackNavigationProp<
   AppStackNavigatorParamList,
   'SignUp'
 >;
+
+export type HomeScreenNavigationProp = StackNavigationProp<
+  AppStackNavigatorParamList,
+  'Home'
+>;

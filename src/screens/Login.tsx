@@ -1,18 +1,38 @@
 import React, {useState} from 'react';
-import {Pressable, SafeAreaView, ScrollView, StyleSheet} from 'react-native';
+import {
+  Alert,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
-import {LoginScreenNavigationProp} from '../types/navigation';
+import type {LoginScreenNavigationProp} from '../types/navigation';
 import Header from '../components/ui/Header';
 import Input from '../components/ui/Input';
 import {horizontalScale, verticalScale} from '../util/scaling';
 import Button from '../components/ui/Button';
 import {Colors} from '../constants/colors';
+import {userLogin} from '../api/user';
+import {useDispatch} from 'react-redux';
+import {logIn} from '../redux/reducers/User';
 
 function Login(): JSX.Element {
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+
+  async function loginHandler() {
+    const user = await userLogin(email, password);
+    if (user) {
+      dispatch(logIn(user));
+      navigation.navigate('Home');
+    } else {
+      Alert.alert('Login failed', 'Invalid credentials. Please try again');
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -35,7 +55,7 @@ function Login(): JSX.Element {
         <Button
           isDisabled={email.length < 5 || password.length < 8}
           title={'Login'}
-          onPress={() => {}}
+          onPress={loginHandler}
         />
         <Pressable
           style={styles.register}

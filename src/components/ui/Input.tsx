@@ -34,6 +34,7 @@ function Input({
         value={value}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
+        autoCapitalize="none"
         onChangeText={val => {
           setValue(val);
           onChangeText(val);

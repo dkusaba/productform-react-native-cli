@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
-import {SignUpScreenNavigationProp} from '../types/navigation';
+import type {SignUpScreenNavigationProp} from '../types/navigation';
 import Header from '../components/ui/Header';
 import Input from '../components/ui/Input';
 import {horizontalScale, verticalScale} from '../util/scaling';

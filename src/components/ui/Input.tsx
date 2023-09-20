@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import type {PropsWithChildren} from 'react';
 import {KeyboardType, StyleSheet, Text, TextInput, View} from 'react-native';
 
@@ -13,18 +13,23 @@ type InputProps = PropsWithChildren<{
   label: string;
   placeholder?: string;
   keyboardType?: KeyboardType;
+  value?: string;
   secureTextEntry?: boolean;
+  onFocus?: () => void;
+  onBlur?: () => void;
   onChangeText: (val: string) => void;
 }>;
 
 function Input({
   label,
   placeholder = '',
+  value,
   keyboardType = 'default',
   secureTextEntry = false,
+  onFocus,
+  onBlur,
   onChangeText,
 }: InputProps): JSX.Element {
-  const [value, setValue] = useState('');
   return (
     <View>
       <Text style={styles.label}>{label}</Text>
@@ -35,10 +40,9 @@ function Input({
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
         autoCapitalize="none"
-        onChangeText={val => {
-          setValue(val);
-          onChangeText(val);
-        }}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        onChangeText={onChangeText}
       />
     </View>
   );

@@ -1,12 +1,15 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   Alert,
   Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
+  Text,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {Formik} from 'formik';
+import * as Yup from 'yup';
 
 import type {LoginScreenNavigationProp} from '../types/navigation';
 import Header from '../components/ui/Header';
@@ -18,13 +21,27 @@ import {userLogin} from '../api/user';
 import {useDispatch} from 'react-redux';
 import {logIn} from '../redux/reducers/User';
 
+const LoginSchema = Yup.object().shape({
+  email: Yup.string()
+    .email('Invalid email')
+    .required('Please enter your email address'),
+  password: Yup.string()
+    .min(8, 'The password must be more than 8 characters')
+    .required('Please enter your password'),
+});
+
 function Login(): JSX.Element {
   const navigation = useNavigation<LoginScreenNavigationProp>();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const dispatch = useDispatch();
+  const formRef = useRef<any>();
 
-  async function loginHandler() {
+  useEffect(() => {
+    if (formRef.current) {
+      formRef.current.validateForm();
+    }
+  }, []);
+
+  async function loginHandler(email: string, password: string) {
     const user = await userLogin(email, password);
     if (user) {
       dispatch(logIn(user));
@@ -37,33 +54,68 @@ function Login(): JSX.Element {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <Header type={1} center={true}>
-          LOGIN
-        </Header>
-        <Input
-          keyboardType={'email-address'}
-          label={'Email'}
-          placeholder={'Enter your email'}
-          onChangeText={(value: string) => setEmail(value)}
-        />
-        <Input
-          label={'Password'}
-          placeholder={'******'}
-          secureTextEntry={true}
-          onChangeText={(value: string) => setPassword(value)}
-        />
-        <Button
-          isDisabled={email.length < 5 || password.length < 8}
-          title={'Login'}
-          onPress={loginHandler}
-        />
-        <Pressable
-          style={styles.register}
-          onPress={() => navigation.navigate('SignUp')}>
-          <Header color={Colors.bluePrimary} type={3} center={true}>
-            Don't have an account? Sign Up.
-          </Header>
-        </Pressable>
+        <Formik
+          innerRef={formRef}
+          initialValues={{
+            email: '',
+            password: '',
+          }}
+          validationSchema={LoginSchema}
+          onSubmit={values => {
+            loginHandler(values.email, values.password);
+          }}>
+          {({
+            values,
+            touched,
+            errors,
+            setFieldTouched,
+            handleChange,
+            handleSubmit,
+            isValid,
+          }) => (
+            <>
+              <Header type={1} center={true}>
+                LOGIN
+              </Header>
+              <Input
+                value={values.email}
+                keyboardType={'email-address'}
+                label={'Email'}
+                placeholder={'Enter your email'}
+                onFocus={() => setFieldTouched('email')}
+                onBlur={() => setFieldTouched('email')}
+                onChangeText={handleChange('email')}
+              />
+              {touched.email && errors.email && (
+                <Text style={styles.errorText}>{errors.email}</Text>
+              )}
+              <Input
+                value={values.password}
+                label={'Password'}
+                placeholder={'******'}
+                secureTextEntry={true}
+                onFocus={() => setFieldTouched('password')}
+                onBlur={() => setFieldTouched('password')}
+                onChangeText={handleChange('password')}
+              />
+              {touched.password && errors.password && (
+                <Text style={styles.errorText}>{errors.password}</Text>
+              )}
+              <Button
+                isDisabled={!isValid}
+                title={'Login'}
+                onPress={handleSubmit}
+              />
+              <Pressable
+                style={styles.register}
+                onPress={() => navigation.navigate('SignUp')}>
+                <Header color={Colors.bluePrimary} type={3} center={true}>
+                  Don't have an account? Sign Up.
+                </Header>
+              </Pressable>
+            </>
+          )}
+        </Formik>
       </ScrollView>
     </SafeAreaView>
   );
@@ -79,5 +131,10 @@ const styles = StyleSheet.create({
   },
   register: {
     marginTop: verticalScale(12),
+  },
+  errorText: {
+    fontFamily: 'Poppins',
+    marginTop: verticalScale(3),
+    color: '#f00',
   },
 });

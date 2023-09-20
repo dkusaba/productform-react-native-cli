@@ -1,6 +1,6 @@
 import React from 'react';
 import type {PropsWithChildren} from 'react';
-import {Pressable, StyleSheet, Text} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 
 import {
   horizontalScale,
@@ -15,18 +15,14 @@ type ButtonProps = PropsWithChildren<{
   onPress: () => void;
 }>;
 
-function Button({
-  title,
-  isDisabled = false,
-  onPress,
-}: ButtonProps): JSX.Element {
+function Button({title, isDisabled = true, onPress}: ButtonProps): JSX.Element {
   return (
-    <Pressable
+    <TouchableOpacity
       disabled={isDisabled}
       style={[style.button, isDisabled && style.disabled]}
       onPress={() => onPress()}>
       <Text style={style.title}>{title}</Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 

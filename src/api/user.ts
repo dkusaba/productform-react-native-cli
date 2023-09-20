@@ -25,7 +25,7 @@ export const userLogin = async (email: string, password: string) => {
       return {error: 'An unknown error occurred.'};
     }
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };
 

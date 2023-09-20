@@ -4,6 +4,8 @@ export type AppStackNavigatorParamList = {
   Login: undefined;
   SignUp: undefined;
   Home: undefined;
+  Profile: undefined;
+  Product: undefined;
 };
 
 export type LoginScreenNavigationProp = StackNavigationProp<
@@ -19,4 +21,14 @@ export type SignUpScreenNavigationProp = StackNavigationProp<
 export type HomeScreenNavigationProp = StackNavigationProp<
   AppStackNavigatorParamList,
   'Home'
+>;
+
+export type ProfileScreenNavigationProp = StackNavigationProp<
+  AppStackNavigatorParamList,
+  'Profile'
+>;
+
+export type ProductScreenNavigationProp = StackNavigationProp<
+  AppStackNavigatorParamList,
+  'Product'
 >;

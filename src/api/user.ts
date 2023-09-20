@@ -17,9 +17,9 @@ export const userLogin = async (email: string, password: string) => {
     if (response && response.status === 200) {
       await Keychain.setGenericPassword(email, password);
       return {
-        id: response.data.user.id,
         isLoggedIn: true,
         token: response.data.token,
+        data: response.data.user,
       };
     } else {
       return {error: 'An unknown error occurred.'};

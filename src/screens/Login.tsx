@@ -10,6 +10,7 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
+import {useDispatch} from 'react-redux';
 
 import type {LoginScreenNavigationProp} from '../types/navigation';
 import Header from '../components/ui/Header';
@@ -18,7 +19,6 @@ import {horizontalScale, verticalScale} from '../util/scaling';
 import Button from '../components/ui/Button';
 import {Colors} from '../constants/colors';
 import {userLogin} from '../api/user';
-import {useDispatch} from 'react-redux';
 import {logIn} from '../redux/reducers/User';
 
 const LoginSchema = Yup.object().shape({
@@ -82,7 +82,6 @@ function Login(): JSX.Element {
                 keyboardType={'email-address'}
                 label={'Email'}
                 placeholder={'Enter your email'}
-                onFocus={() => setFieldTouched('email')}
                 onBlur={() => setFieldTouched('email')}
                 onChangeText={handleChange('email')}
               />
@@ -94,7 +93,6 @@ function Login(): JSX.Element {
                 label={'Password'}
                 placeholder={'******'}
                 secureTextEntry={true}
-                onFocus={() => setFieldTouched('password')}
                 onBlur={() => setFieldTouched('password')}
                 onChangeText={handleChange('password')}
               />

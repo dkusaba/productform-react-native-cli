@@ -14,6 +14,7 @@ type InputProps = PropsWithChildren<{
   placeholder?: string;
   keyboardType?: KeyboardType;
   value?: string;
+  multiline?: boolean;
   secureTextEntry?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
@@ -24,6 +25,7 @@ function Input({
   label,
   placeholder = '',
   value,
+  multiline = false,
   keyboardType = 'default',
   secureTextEntry = false,
   onFocus,
@@ -35,8 +37,10 @@ function Input({
       <Text style={styles.label}>{label}</Text>
       <TextInput
         placeholder={placeholder}
-        style={styles.input}
+        style={[styles.input, multiline && styles.textarea]}
         value={value}
+        multiline={multiline}
+        numberOfLines={multiline ? 10 : 1}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
         autoCapitalize="none"
@@ -69,5 +73,9 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(167, 167, 167, 0.5)',
     color: Colors.grayPrimary,
     borderRadius: horizontalScale(10),
+  },
+  textarea: {
+    height: 100,
+    textAlignVertical: 'top',
   },
 });

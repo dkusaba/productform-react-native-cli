@@ -13,7 +13,7 @@ function Home(): JSX.Element {
   const dispatch = useDispatch();
 
   async function logoutHandler() {
-    const clearCredentials = await await Keychain.getGenericPassword();
+    const clearCredentials = await Keychain.resetGenericPassword();
     if (clearCredentials) {
       dispatch(resetToInitialState);
       navigation.replace('Login');

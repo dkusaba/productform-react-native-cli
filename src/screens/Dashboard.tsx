@@ -4,12 +4,12 @@ import * as Keychain from 'react-native-keychain';
 import {useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 
-import type {HomeScreenNavigationProp} from '../types/navigation';
+import type {DashboardScreenNavigationProp} from '../types/navigation';
 import {resetToInitialState} from '../redux/reducers/User';
 import Header from '../components/ui/Header';
 
-function Home(): JSX.Element {
-  const navigation = useNavigation<HomeScreenNavigationProp>();
+function Dashboard(): JSX.Element {
+  const navigation = useNavigation<DashboardScreenNavigationProp>();
   const dispatch = useDispatch();
 
   async function logoutHandler() {
@@ -22,7 +22,7 @@ function Home(): JSX.Element {
 
   return (
     <SafeAreaView>
-      <Text>Home</Text>
+      <Text>Dashboard</Text>
       <Pressable onPress={logoutHandler}>
         <Header type={1}>Log Out</Header>
       </Pressable>
@@ -30,4 +30,4 @@ function Home(): JSX.Element {
   );
 }
 
-export default Home;
+export default Dashboard;

@@ -45,7 +45,7 @@ function Login(): JSX.Element {
     const user = await userLogin(email, password);
     if (user) {
       dispatch(logIn(user));
-      navigation.navigate('Home');
+      navigation.navigate('Dashboard');
     } else {
       Alert.alert('Login failed', 'Invalid credentials. Please try again');
     }

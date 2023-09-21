@@ -90,7 +90,7 @@ function SignUp(): JSX.Element {
               //   // const user = await userLogin(values.email, values.password);
               //   // if (user) {
               //   //   dispatch(logIn(user));
-              //   //   navigation.replace('Home');
+              //   //   navigation.replace('Dashboard');
               //   // }
               // } else {
               //   Alert.alert('Something went wrong');

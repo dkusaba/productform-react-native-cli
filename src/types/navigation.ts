@@ -3,7 +3,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 export type AppStackNavigatorParamList = {
   Login: undefined;
   SignUp: undefined;
-  Home: undefined;
+  Dashboard: undefined;
   Profile: undefined;
   Product: undefined;
 };
@@ -18,9 +18,9 @@ export type SignUpScreenNavigationProp = StackNavigationProp<
   'SignUp'
 >;
 
-export type HomeScreenNavigationProp = StackNavigationProp<
+export type DashboardScreenNavigationProp = StackNavigationProp<
   AppStackNavigatorParamList,
-  'Home'
+  'Dashboard'
 >;
 
 export type ProfileScreenNavigationProp = StackNavigationProp<

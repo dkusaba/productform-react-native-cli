@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {
   Image,
   Pressable,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -23,6 +24,7 @@ import Input from '../components/ui/Input';
 import {horizontalScale, scaleFontSize, verticalScale} from '../util/scaling';
 import Button from '../components/ui/Button';
 import {Colors} from '../constants/colors';
+import {userEdit} from '../api/user';
 
 function Profile(): JSX.Element {
   const ProfileSchema = Yup.object().shape({
@@ -64,6 +66,7 @@ function Profile(): JSX.Element {
   const navigation = useNavigation<ProfileScreenNavigationProp>();
   const user = useSelector((state: RootState) => state.user);
   const [selectImage, setSelectImage] = useState('');
+  const [imageFormData, setImageFormData] = useState({});
 
   async function imageHandler() {
     const result: any = await launchImageLibrary({
@@ -72,6 +75,17 @@ function Profile(): JSX.Element {
     console.log(result);
     if (result) {
       setSelectImage(result.assets[0].uri);
+      const uri =
+        Platform.OS === 'android'
+          ? result.assets[0].uri
+          : result.assets[0].uri.replace('file://', '');
+
+      console.log('uri', uri);
+      setImageFormData({
+        uri: uri,
+        type: result.assets[0].type,
+        name: result.assets[0].fileName,
+      });
     }
   }
 
@@ -112,6 +126,39 @@ function Profile(): JSX.Element {
               //   visibilityTime: 3000,
               //   position: 'bottom',
               // });
+              let formData = new FormData();
+              formData.append('image', imageFormData);
+              formData.append('customer_id', values.customer_id);
+              formData.append('co_name_jp', values.co_name_jp);
+              formData.append('co_name_kana_jp', values.co_name_kana_jp);
+              formData.append('co_name_en', values.co_name_en);
+              formData.append('co_logo_path', values.co_logo_path);
+              formData.append('co_prefecture_jp', 'Not Japan');
+              formData.append('co_prefecture', values.co_prefecture);
+              formData.append('co_city_en', values.co_city_en);
+              if (values.co_url === '') {
+                formData.append('co_url_choice', '無');
+              } else {
+                formData.append('co_url_choice', '有');
+              }
+              formData.append('co_url', values.co_url);
+              formData.append('co_intro_jp', values.co_intro_jp);
+              formData.append('co_intro_en', values.co_intro_en);
+              formData.append(
+                'strategies_and_goals',
+                values.strategies_and_goals,
+              );
+              formData.append('first_name_en', values.first_name_en);
+              formData.append('last_name_en', values.last_name_en);
+              formData.append('first_name_jp', values.first_name_jp);
+              formData.append('last_name_jp', values.last_name_jp);
+              formData.append('email', values.email);
+              formData.append('phone_number', values.phone_number);
+
+              console.log('imageFormData');
+              console.log(imageFormData);
+              let response = await userEdit(formData, user.token);
+              console.log(response);
             }}>
             {({
               values,

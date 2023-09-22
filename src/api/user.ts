@@ -66,4 +66,24 @@ export const userSignUp = async (
   }
 };
 
+export const userEdit = async (data: any, token: string) => {
+  try {
+    const response = await AuthApi('/update?token=' + token, {
+      method: 'POST',
+      headers: {
+        'content-type': 'multipart/form-data',
+      },
+      data: data,
+    });
+    if (response && response.status === 200) {
+      return {status: 200};
+    } else {
+      return {error: 'An unknown error occurred.'};
+    }
+  } catch (error) {
+    const err = error as AxiosError;
+    console.log(err.response?.data);
+  }
+};
+
 export const userRefreshToken = async () => {};

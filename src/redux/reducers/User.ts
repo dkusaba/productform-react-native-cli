@@ -17,7 +17,6 @@ export type UserState = {
     co_logo_path: string;
     co_prefecture: string;
     co_city_en: string;
-    co_url_choice: string;
     co_url: string;
     co_intro_jp: string;
     co_intro_en: string;

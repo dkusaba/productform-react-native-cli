@@ -66,11 +66,11 @@ function Profile(): JSX.Element {
   const [selectImage, setSelectImage] = useState('');
 
   async function imageHandler() {
-    const result = await launchImageLibrary({
+    const result: any = await launchImageLibrary({
       mediaType: 'photo',
     });
     console.log(result);
-    if (result && result.assets) {
+    if (result) {
       setSelectImage(result.assets[0].uri);
     }
   }
@@ -104,6 +104,7 @@ function Profile(): JSX.Element {
             }}
             validationSchema={ProfileSchema}
             onSubmit={async values => {
+              console.log(values);
               // Toast.show({
               //   type: 'success',
               //   text1: 'You have successfully signed up!',

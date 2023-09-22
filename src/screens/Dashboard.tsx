@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pressable, SafeAreaView, Text} from 'react-native';
+import {Pressable, SafeAreaView} from 'react-native';
 import * as Keychain from 'react-native-keychain';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
@@ -44,8 +44,6 @@ function Dashboard(): JSX.Element {
     user.data.co_logo_path === '' ||
     user.data.co_prefecture === '' ||
     user.data.co_city_en === '' ||
-    user.data.co_url_choice === '' ||
-    user.data.co_url === '' ||
     user.data.co_intro_jp === '' ||
     user.data.co_intro_en === '' ||
     user.data.strategies_and_goals === ''

@@ -1,10 +1,11 @@
 import {StackNavigationProp} from '@react-navigation/stack';
+import type {UserState} from '../redux/reducers/User';
 
 export type AppStackNavigatorParamList = {
   Login: undefined;
   SignUp: undefined;
   Dashboard: undefined;
-  Profile: undefined;
+  Profile: {user: UserState};
   Product: undefined;
 };
 

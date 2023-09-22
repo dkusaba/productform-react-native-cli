@@ -12,7 +12,6 @@ import {useNavigation} from '@react-navigation/native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import Toast from 'react-native-toast-message';
-import * as Keychain from 'react-native-keychain';
 import {useDispatch} from 'react-redux';
 
 import type {SignUpScreenNavigationProp} from '../types/navigation';
@@ -25,14 +24,16 @@ import {userLogin, userSignUp} from '../api/user';
 import {logIn} from '../redux/reducers/User';
 
 const SignUpSchema = Yup.object().shape({
-  fname: Yup.string().required('Please enter your first name'),
-  lname: Yup.string().required('Please enter your last name'),
-  fname_jp: Yup.string().required('Please enter your first name (Japanese)'),
-  lname_jp: Yup.string().required('Please enter your last name (Japanese)'),
+  first_name_en: Yup.string().required('Please enter your first name'),
+  last_name_en: Yup.string().required('Please enter your last name'),
+  first_name_jp: Yup.string().required(
+    'Please enter your first name (Japanese)',
+  ),
+  last_name_jp: Yup.string().required('Please enter your last name (Japanese)'),
   email: Yup.string()
     .email('Invalid email')
     .required('Please enter your email address'),
-  phone: Yup.string()
+  phone_number: Yup.string()
     .matches(/^[0-9]+$/, 'Must only be in numbers only')
     .required('Pleae enter your phone number'),
   password: Yup.string()
@@ -57,12 +58,12 @@ function SignUp(): JSX.Element {
           </Pressable>
           <Formik
             initialValues={{
-              fname: '',
-              lname: '',
-              fname_jp: '',
-              lname_jp: '',
+              first_name_en: '',
+              last_name_en: '',
+              first_name_jp: '',
+              last_name_jp: '',
               email: '',
-              phone: '',
+              phone_number: '',
               password: '',
               confirm_password: '',
             }}
@@ -75,26 +76,25 @@ function SignUp(): JSX.Element {
                 visibilityTime: 3000,
                 position: 'bottom',
               });
-              // const response = await userSignUp(
-              //   values.fname,
-              //   values.lname,
-              //   values.fname_jp,
-              //   values.lname_jp,
-              //   values.email,
-              //   values.phone,
-              //   values.password,
-              // );
+              const response = await userSignUp(
+                values.first_name_en,
+                values.last_name_en,
+                values.first_name_jp,
+                values.last_name_jp,
+                values.email,
+                values.phone_number,
+                values.password,
+              );
 
-              // if (response && response.status === 200) {
-
-              //   // const user = await userLogin(values.email, values.password);
-              //   // if (user) {
-              //   //   dispatch(logIn(user));
-              //   //   navigation.replace('Dashboard');
-              //   // }
-              // } else {
-              //   Alert.alert('Something went wrong');
-              // }
+              if (response && response.status === 200) {
+                const user = await userLogin(values.email, values.password);
+                if (user) {
+                  dispatch(logIn(user));
+                  navigation.replace('Dashboard');
+                }
+              } else {
+                Alert.alert('Something went wrong');
+              }
             }}>
             {({
               touched,
@@ -114,35 +114,35 @@ function SignUp(): JSX.Element {
                 </Text>
                 <Input
                   label={'First Name'}
-                  onBlur={() => setFieldTouched('fname')}
-                  onChangeText={handleChange('fname')}
+                  onBlur={() => setFieldTouched('first_name_en')}
+                  onChangeText={handleChange('first_name_en')}
                 />
-                {touched.fname && errors.fname && (
-                  <Text style={styles.errorText}>{errors.fname}</Text>
+                {touched.first_name_en && errors.first_name_en && (
+                  <Text style={styles.errorText}>{errors.first_name_en}</Text>
                 )}
                 <Input
                   label={'Last Name'}
-                  onBlur={() => setFieldTouched('lname')}
-                  onChangeText={handleChange('lname')}
+                  onBlur={() => setFieldTouched('last_name_en')}
+                  onChangeText={handleChange('last_name_en')}
                 />
-                {touched.lname && errors.lname && (
-                  <Text style={styles.errorText}>{errors.lname}</Text>
+                {touched.last_name_en && errors.last_name_en && (
+                  <Text style={styles.errorText}>{errors.last_name_en}</Text>
                 )}
                 <Input
                   label={'First Name (Japanese)'}
-                  onBlur={() => setFieldTouched('fname_jp')}
-                  onChangeText={handleChange('fname_jp')}
+                  onBlur={() => setFieldTouched('first_name_jp')}
+                  onChangeText={handleChange('first_name_jp')}
                 />
-                {touched.fname_jp && errors.fname_jp && (
-                  <Text style={styles.errorText}>{errors.fname_jp}</Text>
+                {touched.first_name_jp && errors.first_name_jp && (
+                  <Text style={styles.errorText}>{errors.first_name_jp}</Text>
                 )}
                 <Input
                   label={'Last Name (Japanese)'}
-                  onBlur={() => setFieldTouched('lname_jp')}
-                  onChangeText={handleChange('lname_jp')}
+                  onBlur={() => setFieldTouched('last_name_jp')}
+                  onChangeText={handleChange('last_name_jp')}
                 />
-                {touched.lname_jp && errors.lname_jp && (
-                  <Text style={styles.errorText}>{errors.lname_jp}</Text>
+                {touched.last_name_jp && errors.last_name_jp && (
+                  <Text style={styles.errorText}>{errors.last_name_jp}</Text>
                 )}
                 <Input
                   keyboardType={'email-address'}
@@ -156,11 +156,11 @@ function SignUp(): JSX.Element {
                 <Input
                   keyboardType={'number-pad'}
                   label={'Phone Number'}
-                  onBlur={() => setFieldTouched('phone')}
-                  onChangeText={handleChange('phone')}
+                  onBlur={() => setFieldTouched('phone_number')}
+                  onChangeText={handleChange('phone_number')}
                 />
-                {touched.phone && errors.phone && (
-                  <Text style={styles.errorText}>{errors.phone}</Text>
+                {touched.phone_number && errors.phone_number && (
+                  <Text style={styles.errorText}>{errors.phone_number}</Text>
                 )}
                 <Input
                   label={'Password'}

@@ -14,6 +14,7 @@ type InputProps = PropsWithChildren<{
   placeholder?: string;
   keyboardType?: KeyboardType;
   value?: string;
+  editable?: boolean;
   multiline?: boolean;
   secureTextEntry?: boolean;
   onFocus?: () => void;
@@ -25,6 +26,7 @@ function Input({
   label,
   placeholder = '',
   value,
+  editable = true,
   multiline = false,
   keyboardType = 'default',
   secureTextEntry = false,
@@ -39,6 +41,7 @@ function Input({
         placeholder={placeholder}
         style={[styles.input, multiline && styles.textarea]}
         value={value}
+        editable={editable}
         multiline={multiline}
         numberOfLines={multiline ? 10 : 1}
         secureTextEntry={secureTextEntry}

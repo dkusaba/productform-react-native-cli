@@ -12,16 +12,26 @@ import {Colors} from '../../constants/colors';
 type ButtonProps = PropsWithChildren<{
   title: string;
   isDisabled?: boolean;
+  secondary?: boolean;
   onPress: () => void;
 }>;
 
-function Button({title, isDisabled = true, onPress}: ButtonProps): JSX.Element {
+function Button({
+  title,
+  isDisabled = true,
+  secondary = false,
+  onPress,
+}: ButtonProps): JSX.Element {
   return (
     <TouchableOpacity
       disabled={isDisabled}
-      style={[style.button, isDisabled && style.disabled]}
+      style={[
+        style.button,
+        secondary && style.button2,
+        isDisabled && style.disabled,
+      ]}
       onPress={() => onPress()}>
-      <Text style={style.title}>{title}</Text>
+      <Text style={[style.title, secondary && style.title2]}>{title}</Text>
     </TouchableOpacity>
   );
 }
@@ -36,6 +46,10 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: horizontalScale(10),
   },
+  button2: {
+    backgroundColor: Colors.gray700,
+    borderRadius: horizontalScale(5),
+  },
   disabled: {
     opacity: 0.5,
   },
@@ -46,5 +60,8 @@ const style = StyleSheet.create({
     lineHeight: scaleFontSize(19),
     color: '#FFFFFF',
     textAlign: 'center',
+  },
+  title2: {
+    color: Colors.grayPrimary,
   },
 });

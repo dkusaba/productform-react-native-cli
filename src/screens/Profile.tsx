@@ -10,12 +10,14 @@ import {
   View,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import Toast from 'react-native-toast-message';
 import {launchImageLibrary} from 'react-native-image-picker';
 
 import type {ProfileScreenNavigationProp} from '../types/navigation';
+import type {RootState} from '../redux/store';
 import Header from '../components/ui/Header';
 import Input from '../components/ui/Input';
 import {horizontalScale, scaleFontSize, verticalScale} from '../util/scaling';
@@ -25,41 +27,42 @@ import {Colors} from '../constants/colors';
 function Profile(): JSX.Element {
   const ProfileSchema = Yup.object().shape({
     customer_id: Yup.string().required('Please enter your customer ID'),
-    co_name: Yup.string().required('Please enter your company name'),
+    co_name_en: Yup.string().required('Please enter your company name'),
     co_name_jp: Yup.string().required(
       'Please enter your company name (Japanese)',
     ),
-    co_name_jp_kana: Yup.string().required(
+    co_name_kana_jp: Yup.string().required(
       'Please enter your company name (Japanese Kana)',
     ),
-    address: Yup.string().required('Please enter your company address'),
-    state: Yup.string().required(
+    co_city_en: Yup.string().required('Please enter your company address'),
+    co_prefecture: Yup.string().required(
       'Please enter the name of state your company is in',
     ),
-    co_intro: Yup.string().required('Please enter company introduction'),
+    co_intro_en: Yup.string().required('Please enter company introduction'),
     co_intro_jp: Yup.string().required(
       'Please enter company introduction (Japanese)',
     ),
-    fname: Yup.string().required('Please enter your first name'),
-    lname: Yup.string().required('Please enter your last name'),
-    fname_jp: Yup.string().required('Please enter your first name (Japanese)'),
-    lname_jp: Yup.string().required('Please enter your last name (Japanese)'),
+    strategies_and_goals: Yup.string().required(
+      "Please enter your company's strategies and goals",
+    ),
+    first_name_en: Yup.string().required('Please enter your first name'),
+    last_name_en: Yup.string().required('Please enter your last name'),
+    first_name_jp: Yup.string().required(
+      'Please enter your first name (Japanese)',
+    ),
+    last_name_jp: Yup.string().required(
+      'Please enter your last name (Japanese)',
+    ),
     email: Yup.string()
       .email('Invalid email')
       .required('Please enter your email address'),
-    phone: Yup.string()
+    phone_number: Yup.string()
       .matches(/^[0-9]+$/, 'Must only be in numbers only')
       .required('Pleae enter your phone number'),
-    password: Yup.string()
-      .min(8, 'Password must be more than 8 characters')
-      .required('Please enter your password'),
-    confirm_password: Yup.string()
-      .min(8, 'Confirm Password must be more than 8 characters long')
-      .oneOf([Yup.ref('password')], 'Your Passwords do not match')
-      .required('Confirm password is required'),
   });
 
   const navigation = useNavigation<ProfileScreenNavigationProp>();
+  const user = useSelector((state: RootState) => state.user);
   const [selectImage, setSelectImage] = useState('');
 
   async function imageHandler() {
@@ -81,33 +84,36 @@ function Profile(): JSX.Element {
           </Pressable>
           <Formik
             initialValues={{
-              customer_id: '',
-              co_name: '',
-              co_name_jp: '',
-              co_name_jp_kana: '',
-              address: '',
-              state: '',
-              homepage_url: '',
-              co_intro: '',
-              co_intro_jp: '',
-              fname: '',
-              lname: '',
-              fname_jp: '',
-              lname_jp: '',
-              email: '',
-              phone: '',
+              customer_id: user.data.customer_id,
+              co_name_jp: user.data.co_name_jp,
+              co_name_kana_jp: user.data.co_name_kana_jp,
+              co_name_en: user.data.co_name_en,
+              co_logo_path: user.data.co_logo_path,
+              co_prefecture: user.data.co_prefecture,
+              co_city_en: user.data.co_city_en,
+              co_url: user.data.co_url,
+              co_intro_jp: user.data.co_intro_jp,
+              co_intro_en: user.data.co_intro_en,
+              strategies_and_goals: user.data.strategies_and_goals,
+              first_name_en: user.data.first_name_en,
+              last_name_en: user.data.last_name_en,
+              first_name_jp: user.data.first_name_jp,
+              last_name_jp: user.data.last_name_jp,
+              email: user.data.email,
+              phone_number: user.data.phone_number,
             }}
             validationSchema={ProfileSchema}
             onSubmit={async values => {
-              Toast.show({
-                type: 'success',
-                text1: 'You have successfully signed up!',
-                text2: 'Now logging you in...',
-                visibilityTime: 3000,
-                position: 'bottom',
-              });
+              // Toast.show({
+              //   type: 'success',
+              //   text1: 'You have successfully signed up!',
+              //   text2: 'Now logging you in...',
+              //   visibilityTime: 3000,
+              //   position: 'bottom',
+              // });
             }}>
             {({
+              values,
               touched,
               errors,
               setFieldTouched,
@@ -132,11 +138,11 @@ function Profile(): JSX.Element {
                   )}
                   <Input
                     label={'Company Name'}
-                    onBlur={() => setFieldTouched('co_name')}
-                    onChangeText={handleChange('co_name')}
+                    onBlur={() => setFieldTouched('co_name_en')}
+                    onChangeText={handleChange('co_name_en')}
                   />
-                  {touched.co_name && errors.co_name && (
-                    <Text style={styles.errorText}>{errors.co_name}</Text>
+                  {touched.co_name_en && errors.co_name_en && (
+                    <Text style={styles.errorText}>{errors.co_name_en}</Text>
                   )}
                   <Input
                     label={'Company Name (Japanese)'}
@@ -145,6 +151,16 @@ function Profile(): JSX.Element {
                   />
                   {touched.co_name_jp && errors.co_name_jp && (
                     <Text style={styles.errorText}>{errors.co_name_jp}</Text>
+                  )}
+                  <Input
+                    label={'Company Name (Japanese - Kana)'}
+                    onBlur={() => setFieldTouched('co_name_kana_jp')}
+                    onChangeText={handleChange('co_name_kana_jp')}
+                  />
+                  {touched.co_name_kana_jp && errors.co_name_kana_jp && (
+                    <Text style={styles.errorText}>
+                      {errors.co_name_kana_jp}
+                    </Text>
                   )}
                   <Text style={styles.label}>Company Logo</Text>
                   <TouchableOpacity
@@ -156,44 +172,34 @@ function Profile(): JSX.Element {
                     <Image style={styles.image} source={{uri: selectImage}} />
                   )}
                   <Input
-                    label={'Company Name (Japanese - Kana)'}
-                    onBlur={() => setFieldTouched('co_name_jp_kana')}
-                    onChangeText={handleChange('co_name_jp_kana')}
-                  />
-                  {touched.co_name_jp_kana && errors.co_name_jp_kana && (
-                    <Text style={styles.errorText}>
-                      {errors.co_name_jp_kana}
-                    </Text>
-                  )}
-                  <Input
                     label={'Address'}
-                    onBlur={() => setFieldTouched('address')}
-                    onChangeText={handleChange('address')}
+                    onBlur={() => setFieldTouched('co_city_en')}
+                    onChangeText={handleChange('co_city_en')}
                   />
-                  {touched.address && errors.address && (
-                    <Text style={styles.errorText}>{errors.address}</Text>
+                  {touched.co_city_en && errors.co_city_en && (
+                    <Text style={styles.errorText}>{errors.co_city_en}</Text>
                   )}
                   <Input
                     label={'State'}
-                    onBlur={() => setFieldTouched('state')}
-                    onChangeText={handleChange('state')}
+                    onBlur={() => setFieldTouched('co_prefecture')}
+                    onChangeText={handleChange('co_prefecture')}
                   />
-                  {touched.state && errors.state && (
-                    <Text style={styles.errorText}>{errors.state}</Text>
+                  {touched.co_prefecture && errors.co_prefecture && (
+                    <Text style={styles.errorText}>{errors.co_prefecture}</Text>
                   )}
                   <Input
                     label={'Home Page URL'}
-                    onBlur={() => setFieldTouched('homepage_url')}
-                    onChangeText={handleChange('homepage_url')}
+                    onBlur={() => setFieldTouched('co_url')}
+                    onChangeText={handleChange('co_url')}
                   />
                   <Input
                     label={'Company Introduction'}
                     multiline={true}
-                    onBlur={() => setFieldTouched('co_intro')}
-                    onChangeText={handleChange('co_intro')}
+                    onBlur={() => setFieldTouched('co_intro_en')}
+                    onChangeText={handleChange('co_intro_en')}
                   />
-                  {touched.co_intro && errors.co_intro && (
-                    <Text style={styles.errorText}>{errors.co_intro}</Text>
+                  {touched.co_intro_en && errors.co_intro_en && (
+                    <Text style={styles.errorText}>{errors.co_intro_en}</Text>
                   )}
                   <Input
                     label={'Company Introduction (Japanese)'}
@@ -204,62 +210,76 @@ function Profile(): JSX.Element {
                   {touched.co_intro_jp && errors.co_intro_jp && (
                     <Text style={styles.errorText}>{errors.co_intro_jp}</Text>
                   )}
+                  <Input
+                    label={'Company strategies and goals'}
+                    multiline={true}
+                    onBlur={() => setFieldTouched('strategies_and_goals')}
+                    onChangeText={handleChange('strategies_and_goals')}
+                  />
+                  {touched.strategies_and_goals &&
+                    errors.strategies_and_goals && (
+                      <Text style={styles.errorText}>
+                        {errors.strategies_and_goals}
+                      </Text>
+                    )}
                 </View>
                 <View style={styles.userProfileContainer}>
                   <Header type={1}>User Profile</Header>
-                  <Text style={styles.instructions}>
-                    Fields labeled (Japanese) are not forced. You may enter
-                    English instead.
-                  </Text>
                   <Input
+                    value={values.first_name_en}
                     label={'First Name'}
-                    onBlur={() => setFieldTouched('fname')}
-                    onChangeText={handleChange('fname')}
+                    onBlur={() => setFieldTouched('first_name_en')}
+                    onChangeText={handleChange('first_name_en')}
                   />
-                  {touched.fname && errors.fname && (
-                    <Text style={styles.errorText}>{errors.fname}</Text>
+                  {touched.first_name_en && errors.first_name_en && (
+                    <Text style={styles.errorText}>{errors.first_name_en}</Text>
                   )}
                   <Input
+                    value={values.last_name_en}
                     label={'Last Name'}
-                    onBlur={() => setFieldTouched('lname')}
-                    onChangeText={handleChange('lname')}
+                    onBlur={() => setFieldTouched('last_name_en')}
+                    onChangeText={handleChange('last_name_en')}
                   />
-                  {touched.lname && errors.lname && (
-                    <Text style={styles.errorText}>{errors.lname}</Text>
+                  {touched.last_name_en && errors.last_name_en && (
+                    <Text style={styles.errorText}>{errors.last_name_en}</Text>
                   )}
                   <Input
+                    value={values.first_name_jp}
                     label={'First Name (Japanese)'}
-                    onBlur={() => setFieldTouched('fname_jp')}
-                    onChangeText={handleChange('fname_jp')}
+                    onBlur={() => setFieldTouched('first_name_jp')}
+                    onChangeText={handleChange('first_name_jp')}
                   />
-                  {touched.fname_jp && errors.fname_jp && (
-                    <Text style={styles.errorText}>{errors.fname_jp}</Text>
+                  {touched.first_name_jp && errors.first_name_jp && (
+                    <Text style={styles.errorText}>{errors.first_name_jp}</Text>
                   )}
                   <Input
+                    value={values.last_name_jp}
                     label={'Last Name (Japanese)'}
-                    onBlur={() => setFieldTouched('lname_jp')}
-                    onChangeText={handleChange('lname_jp')}
+                    onBlur={() => setFieldTouched('last_name_jp')}
+                    onChangeText={handleChange('last_name_jp')}
                   />
-                  {touched.lname_jp && errors.lname_jp && (
-                    <Text style={styles.errorText}>{errors.lname_jp}</Text>
+                  {touched.last_name_jp && errors.last_name_jp && (
+                    <Text style={styles.errorText}>{errors.last_name_jp}</Text>
                   )}
+                  <View style={styles.disabled}>
+                    <Input
+                      value={values.email}
+                      keyboardType={'email-address'}
+                      label={'Email'}
+                      editable={false}
+                      onBlur={() => setFieldTouched('email')}
+                      onChangeText={handleChange('email')}
+                    />
+                  </View>
                   <Input
-                    keyboardType={'email-address'}
-                    label={'Email'}
-                    onBlur={() => setFieldTouched('email')}
-                    onChangeText={handleChange('email')}
-                  />
-                  {touched.email && errors.email && (
-                    <Text style={styles.errorText}>{errors.email}</Text>
-                  )}
-                  <Input
+                    value={values.phone_number}
                     keyboardType={'number-pad'}
                     label={'Phone Number'}
                     onBlur={() => setFieldTouched('phone')}
                     onChangeText={handleChange('phone')}
                   />
-                  {touched.phone && errors.phone && (
-                    <Text style={styles.errorText}>{errors.phone}</Text>
+                  {touched.phone_number && errors.phone_number && (
+                    <Text style={styles.errorText}>{errors.phone_number}</Text>
                   )}
                 </View>
                 <Button
@@ -327,6 +347,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     resizeMode: 'cover',
+  },
+  disabled: {
+    opacity: 0.5,
   },
   errorText: {
     fontFamily: 'Poppins',

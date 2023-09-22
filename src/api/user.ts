@@ -31,12 +31,12 @@ export const userLogin = async (email: string, password: string) => {
 };
 
 export const userSignUp = async (
-  fname: string,
-  lname: string,
-  fname_jp: string,
-  lname_jp: string,
+  first_name_en: string,
+  last_name_en: string,
+  first_name_jp: string,
+  last_name_jp: string,
   email: string,
-  phone: string,
+  phone_number: string,
   password: string,
 ) => {
   try {
@@ -48,11 +48,11 @@ export const userSignUp = async (
       data: {
         email: email,
         password: password,
-        last_name_jp: lname_jp,
-        first_name_jp: fname_jp,
-        last_name_en: lname,
-        first_name_en: fname,
-        phone_number: phone,
+        last_name_jp: last_name_jp,
+        first_name_jp: first_name_jp,
+        last_name_en: last_name_en,
+        first_name_en: first_name_en,
+        phone_number: phone_number,
       },
     });
     if (response && response.status === 200) {

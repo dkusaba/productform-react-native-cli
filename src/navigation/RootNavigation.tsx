@@ -4,6 +4,7 @@ import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import Dashboard from '../screens/Dashboard';
 import Profile from '../screens/Profile';
+import Product from '../screens/Product';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,7 @@ function RootNavigation(): JSX.Element {
       <Stack.Screen name="SignUp" component={SignUp} />
       <Stack.Screen name="Dashboard" component={Dashboard} />
       <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="Product" component={Product} />
     </Stack.Navigator>
   );
 }

@@ -46,6 +46,14 @@ function Dashboard(): JSX.Element {
           navigation.navigate('Profile', {user: user});
         }}
       />
+      <Button
+        secondary={true}
+        title={'Register a product'}
+        isDisabled={false}
+        onPress={() => {
+          navigation.navigate('Product');
+        }}
+      />
     </SafeAreaView>
   );
 }

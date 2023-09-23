@@ -11,7 +11,7 @@ const Stack = createStackNavigator();
 function RootNavigation(): JSX.Element {
   return (
     <Stack.Navigator
-      initialRouteName="Login"
+      initialRouteName="Product"
       screenOptions={{headerShown: false}}>
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="SignUp" component={SignUp} />

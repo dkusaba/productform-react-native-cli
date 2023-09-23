@@ -58,11 +58,15 @@ export const User = createSlice({
     resetToInitialState: () => {
       return initialState;
     },
+    updateProfile: (state, action) => {
+      state.data = action.payload;
+    },
     updateToken: (state, action) => {
       state.token = action.payload;
     },
   },
 });
 
-export const {logIn, resetToInitialState, updateToken} = User.actions;
+export const {logIn, resetToInitialState, updateProfile, updateToken} =
+  User.actions;
 export default User.reducer;

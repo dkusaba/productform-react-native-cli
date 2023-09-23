@@ -16,6 +16,7 @@ export const userLogin = async (email: string, password: string) => {
       },
     });
     if (response && response.status === 200) {
+      console.log('user', response.data.user);
       await Keychain.setGenericPassword(email, password);
       return {
         isLoggedIn: true,
@@ -76,6 +77,7 @@ export const userEdit = async (data: any, token: string) => {
       data: data,
     });
     if (response && response.status === 200) {
+      console.log('response', response);
       return {status: 200};
     } else {
       return {error: 'An unknown error occurred.'};

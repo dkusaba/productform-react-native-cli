@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Pressable, SafeAreaView} from 'react-native';
 import * as Keychain from 'react-native-keychain';
 import {useDispatch, useSelector} from 'react-redux';
@@ -25,15 +25,24 @@ function Dashboard(): JSX.Element {
   }
 
   let test = (
-    <Button
-      secondary={true}
-      title={'Register a product'}
-      isDisabled={false}
-      onPress={() => {
-        console.log('pressed');
-        navigation.navigate('Product');
-      }}
-    />
+    <>
+      <Button
+        secondary={true}
+        title={'Register a product'}
+        isDisabled={false}
+        onPress={() => {
+          navigation.navigate('Product');
+        }}
+      />
+      <Button
+        secondary={true}
+        title={'Enter company profile'}
+        isDisabled={false}
+        onPress={() => {
+          navigation.navigate('Profile', {user: user});
+        }}
+      />
+    </>
   );
 
   if (
@@ -54,7 +63,6 @@ function Dashboard(): JSX.Element {
         title={'Enter company profile'}
         isDisabled={false}
         onPress={() => {
-          console.log('pressed');
           navigation.navigate('Profile', {user: user});
         }}
       />

@@ -101,7 +101,7 @@ function Login(): JSX.Element {
               )}
               <Button
                 isDisabled={!isValid}
-                title={'Login'}
+                title={'LOGIN'}
                 onPress={handleSubmit}
               />
               <Pressable

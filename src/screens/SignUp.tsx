@@ -184,7 +184,7 @@ function SignUp(): JSX.Element {
                 )}
                 <Button
                   isDisabled={!isValid}
-                  title={'Sign Up'}
+                  title={'SIGN UP'}
                   onPress={handleSubmit}
                 />
               </>

@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {
+  Alert,
   Image,
   Pressable,
   Platform,
@@ -11,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import Toast from 'react-native-toast-message';
@@ -25,6 +26,7 @@ import {horizontalScale, scaleFontSize, verticalScale} from '../util/scaling';
 import Button from '../components/ui/Button';
 import {Colors} from '../constants/colors';
 import {userEdit} from '../api/user';
+import {updateProfile} from '../redux/reducers/User';
 
 function Profile(): JSX.Element {
   const ProfileSchema = Yup.object().shape({
@@ -65,6 +67,7 @@ function Profile(): JSX.Element {
 
   const navigation = useNavigation<ProfileScreenNavigationProp>();
   const user = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
   const [selectImage, setSelectImage] = useState('');
   const [imageFormData, setImageFormData] = useState({});
 
@@ -72,15 +75,12 @@ function Profile(): JSX.Element {
     const result: any = await launchImageLibrary({
       mediaType: 'photo',
     });
-    console.log(result);
     if (result) {
       setSelectImage(result.assets[0].uri);
       const uri =
         Platform.OS === 'android'
           ? result.assets[0].uri
           : result.assets[0].uri.replace('file://', '');
-
-      console.log('uri', uri);
       setImageFormData({
         uri: uri,
         type: result.assets[0].type,
@@ -118,21 +118,26 @@ function Profile(): JSX.Element {
             }}
             validationSchema={ProfileSchema}
             onSubmit={async values => {
-              console.log(values);
-              // Toast.show({
-              //   type: 'success',
-              //   text1: 'You have successfully signed up!',
-              //   text2: 'Now logging you in...',
-              //   visibilityTime: 3000,
-              //   position: 'bottom',
-              // });
+              if (values.co_logo_path === '' || imageFormData === '') {
+                Toast.show({
+                  type: 'error',
+                  text1: 'Please select your company logo',
+                  visibilityTime: 3000,
+                  position: 'bottom',
+                });
+                return;
+              }
+
               let formData = new FormData();
-              formData.append('image', imageFormData);
+              if (imageFormData) {
+                formData.append('image', imageFormData);
+              } else {
+                formData.append('co_logo_path', values.co_logo_path);
+              }
               formData.append('customer_id', values.customer_id);
               formData.append('co_name_jp', values.co_name_jp);
               formData.append('co_name_kana_jp', values.co_name_kana_jp);
               formData.append('co_name_en', values.co_name_en);
-              formData.append('co_logo_path', values.co_logo_path);
               formData.append('co_prefecture_jp', 'Not Japan');
               formData.append('co_prefecture', values.co_prefecture);
               formData.append('co_city_en', values.co_city_en);
@@ -155,10 +160,17 @@ function Profile(): JSX.Element {
               formData.append('email', values.email);
               formData.append('phone_number', values.phone_number);
 
-              console.log('imageFormData');
-              console.log(imageFormData);
               let response = await userEdit(formData, user.token);
-              console.log(response);
+              if (response && response.status === 200) {
+                dispatch(updateProfile(response.data));
+              }
+              Toast.show({
+                type: 'success',
+                text1: 'Profile updated successfully',
+                visibilityTime: 3000,
+                position: 'bottom',
+              });
+              navigation.replace('Dashboard');
             }}>
             {({
               values,
@@ -177,6 +189,7 @@ function Profile(): JSX.Element {
                     English instead.
                   </Text>
                   <Input
+                    value={values.customer_id}
                     label={'Customer ID'}
                     onBlur={() => setFieldTouched('customer_id')}
                     onChangeText={handleChange('customer_id')}
@@ -185,6 +198,7 @@ function Profile(): JSX.Element {
                     <Text style={styles.errorText}>{errors.customer_id}</Text>
                   )}
                   <Input
+                    value={values.co_name_en}
                     label={'Company Name'}
                     onBlur={() => setFieldTouched('co_name_en')}
                     onChangeText={handleChange('co_name_en')}
@@ -193,6 +207,7 @@ function Profile(): JSX.Element {
                     <Text style={styles.errorText}>{errors.co_name_en}</Text>
                   )}
                   <Input
+                    value={values.co_name_jp}
                     label={'Company Name (Japanese)'}
                     onBlur={() => setFieldTouched('co_name_jp')}
                     onChangeText={handleChange('co_name_jp')}
@@ -201,6 +216,7 @@ function Profile(): JSX.Element {
                     <Text style={styles.errorText}>{errors.co_name_jp}</Text>
                   )}
                   <Input
+                    value={values.co_name_kana_jp}
                     label={'Company Name (Japanese - Kana)'}
                     onBlur={() => setFieldTouched('co_name_kana_jp')}
                     onChangeText={handleChange('co_name_kana_jp')}
@@ -219,7 +235,16 @@ function Profile(): JSX.Element {
                   {selectImage && (
                     <Image style={styles.image} source={{uri: selectImage}} />
                   )}
+                  {values.co_logo_path && !selectImage ? (
+                    <Image
+                      style={styles.image}
+                      source={{
+                        uri: `http://127.0.0.1:8000/images/company-logo/${values.co_logo_path}`,
+                      }}
+                    />
+                  ) : null}
                   <Input
+                    value={values.co_city_en}
                     label={'Address'}
                     onBlur={() => setFieldTouched('co_city_en')}
                     onChangeText={handleChange('co_city_en')}
@@ -228,6 +253,7 @@ function Profile(): JSX.Element {
                     <Text style={styles.errorText}>{errors.co_city_en}</Text>
                   )}
                   <Input
+                    value={values.co_prefecture}
                     label={'State'}
                     onBlur={() => setFieldTouched('co_prefecture')}
                     onChangeText={handleChange('co_prefecture')}
@@ -236,11 +262,13 @@ function Profile(): JSX.Element {
                     <Text style={styles.errorText}>{errors.co_prefecture}</Text>
                   )}
                   <Input
+                    value={values.co_url}
                     label={'Home Page URL'}
                     onBlur={() => setFieldTouched('co_url')}
                     onChangeText={handleChange('co_url')}
                   />
                   <Input
+                    value={values.co_intro_en}
                     label={'Company Introduction'}
                     multiline={true}
                     onBlur={() => setFieldTouched('co_intro_en')}
@@ -250,6 +278,7 @@ function Profile(): JSX.Element {
                     <Text style={styles.errorText}>{errors.co_intro_en}</Text>
                   )}
                   <Input
+                    value={values.co_intro_jp}
                     label={'Company Introduction (Japanese)'}
                     multiline={true}
                     onBlur={() => setFieldTouched('co_intro_jp')}
@@ -259,6 +288,7 @@ function Profile(): JSX.Element {
                     <Text style={styles.errorText}>{errors.co_intro_jp}</Text>
                   )}
                   <Input
+                    value={values.strategies_and_goals}
                     label={'Company strategies and goals'}
                     multiline={true}
                     onBlur={() => setFieldTouched('strategies_and_goals')}
@@ -323,8 +353,8 @@ function Profile(): JSX.Element {
                     value={values.phone_number}
                     keyboardType={'number-pad'}
                     label={'Phone Number'}
-                    onBlur={() => setFieldTouched('phone')}
-                    onChangeText={handleChange('phone')}
+                    onBlur={() => setFieldTouched('phone_number')}
+                    onChangeText={handleChange('phone_number')}
                   />
                   {touched.phone_number && errors.phone_number && (
                     <Text style={styles.errorText}>{errors.phone_number}</Text>
@@ -332,7 +362,7 @@ function Profile(): JSX.Element {
                 </View>
                 <Button
                   isDisabled={!isValid}
-                  title={'Sign Up'}
+                  title={'UPDATE'}
                   onPress={handleSubmit}
                 />
               </>

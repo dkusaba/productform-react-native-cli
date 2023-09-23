@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
     marginTop: verticalScale(15),
   },
   instructions: {
-    marginVertical: verticalScale(20),
+    marginVertical: verticalScale(14),
     fontFamily: 'Poppins',
     fontSize: scaleFontSize(14),
     color: Colors.grayPrimary,

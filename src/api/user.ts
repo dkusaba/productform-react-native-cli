@@ -77,8 +77,7 @@ export const userEdit = async (data: any, token: string) => {
       data: data,
     });
     if (response && response.status === 200) {
-      console.log('response', response);
-      return {status: 200};
+      return response;
     } else {
       return {error: 'An unknown error occurred.'};
     }

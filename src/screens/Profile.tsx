@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {
-  Alert,
   Image,
   Pressable,
   Platform,
@@ -118,6 +117,7 @@ function Profile(): JSX.Element {
             }}
             validationSchema={ProfileSchema}
             onSubmit={async values => {
+              console.log('values', values);
               if (values.co_logo_path === '' || imageFormData === '') {
                 Toast.show({
                   type: 'error',
@@ -129,7 +129,7 @@ function Profile(): JSX.Element {
               }
 
               let formData = new FormData();
-              if (imageFormData) {
+              if (Object.keys(imageFormData).length > 0) {
                 formData.append('image', imageFormData);
               } else {
                 formData.append('co_logo_path', values.co_logo_path);
@@ -159,8 +159,8 @@ function Profile(): JSX.Element {
               formData.append('last_name_jp', values.last_name_jp);
               formData.append('email', values.email);
               formData.append('phone_number', values.phone_number);
-
               let response = await userEdit(formData, user.token);
+              console.log('profile response', response);
               if (response && response.status === 200) {
                 dispatch(updateProfile(response.data));
               }
@@ -170,7 +170,9 @@ function Profile(): JSX.Element {
                 visibilityTime: 3000,
                 position: 'bottom',
               });
-              navigation.replace('Dashboard');
+              setTimeout(() => {
+                navigation.navigate('Dashboard');
+              }, 1000);
             }}>
             {({
               values,

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Pressable, SafeAreaView} from 'react-native';
 import * as Keychain from 'react-native-keychain';
 import {useDispatch, useSelector} from 'react-redux';
@@ -24,8 +24,12 @@ function Dashboard(): JSX.Element {
     }
   }
 
-  let test = (
-    <>
+  return (
+    <SafeAreaView>
+      <Header type={1}>DASHBOARD</Header>
+      <Pressable onPress={logoutHandler}>
+        <Header type={1}>Log Out</Header>
+      </Pressable>
       <Button
         secondary={true}
         title={'Register a product'}
@@ -42,40 +46,6 @@ function Dashboard(): JSX.Element {
           navigation.navigate('Profile', {user: user});
         }}
       />
-    </>
-  );
-
-  if (
-    user.data.customer_id === '' ||
-    user.data.co_name_jp === '' ||
-    user.data.co_name_kana_jp === '' ||
-    user.data.co_name_en === '' ||
-    user.data.co_logo_path === '' ||
-    user.data.co_prefecture === '' ||
-    user.data.co_city_en === '' ||
-    user.data.co_intro_jp === '' ||
-    user.data.co_intro_en === '' ||
-    user.data.strategies_and_goals === ''
-  ) {
-    test = (
-      <Button
-        secondary={true}
-        title={'Enter company profile'}
-        isDisabled={false}
-        onPress={() => {
-          navigation.navigate('Profile', {user: user});
-        }}
-      />
-    );
-  }
-
-  return (
-    <SafeAreaView>
-      <Header type={1}>DASHBOARD</Header>
-      <Pressable onPress={logoutHandler}>
-        <Header type={1}>Log Out</Header>
-      </Pressable>
-      {test}
     </SafeAreaView>
   );
 }

@@ -210,3 +210,39 @@ export const YesNo = [
   {label: 'Yes', value: 'Yes'},
   {label: 'No', value: 'No'},
 ];
+
+export const SellingPoint = [
+  {label: 'Vegan', value: 'Vegan'},
+  {label: 'Organic', value: 'Organic'},
+  {label: 'Gluten Free', value: 'Gluten Free'},
+  {label: 'Vegetarian', value: 'Vegetarian'},
+  {label: 'Halal', value: 'Halal'},
+  {label: 'Kosher', value: 'Kosher'},
+  {label: 'Low GI', value: 'Low GI'},
+  {label: 'Fermented', value: 'Fermented'},
+  {label: 'Gift', value: 'Gift'},
+];
+
+export const ManufacturerCertifications = [
+  {label: 'FSMA', value: 'FSMA'},
+  {label: 'HACCP for US', value: 'HACCP for US'},
+  {label: 'HACCP for EU', value: 'HACCP for EU'},
+  {label: 'BRC Certification', value: 'BRC Certification'},
+  {label: 'FSSC 22000', value: 'FSSC 22000'},
+  {label: 'ISO 22000', value: 'ISO 22000'},
+  {label: 'JFS-C Standard', value: 'JFS-C Standard'},
+];
+
+export const ProductCertifications = [
+  {label: 'USDA Organic', value: 'USDA Organic'},
+  {label: 'EU Organic', value: 'EU Organic'},
+  {label: 'Organic JAS', value: 'Organic JAS'},
+  {label: 'Non-GMO Project', value: 'Non-GMO Project'},
+  {label: 'GFCO', value: 'GFCO'},
+  {label: 'GFCP', value: 'GFCP'},
+  {label: 'GMP', value: 'GMP'},
+  {label: 'MSC/ASC', value: 'MSC/ASC'},
+  {label: 'MEL/AEL', value: 'MEL/AEL'},
+  {label: 'Kosher', value: 'Kosher'},
+  {label: 'Halal', value: 'Halal'},
+];

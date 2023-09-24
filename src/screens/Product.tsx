@@ -14,7 +14,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import Toast from 'react-native-toast-message';
-import {Dropdown} from 'react-native-element-dropdown';
+import {Dropdown, MultiSelect} from 'react-native-element-dropdown';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faSquare, faSquareCheck} from '@fortawesome/free-regular-svg-icons';
 
 import type {ProductScreenNavigationProp} from '../types/navigation';
 import {horizontalScale, verticalScale, scaleFontSize} from '../util/scaling';
@@ -32,6 +34,9 @@ import {
   DeliveryTimeUnit,
   OEMPossibility,
   YesNo,
+  SellingPoint,
+  ManufacturerCertifications,
+  ProductCertifications,
 } from '../constants/product-options';
 import Button from '../components/ui/Button';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -103,6 +108,22 @@ function Product(): JSX.Element {
   const [image1FormData, setImage1FormData] = useState('');
   const [image2, setImage2] = useState('');
   const [image1FormData2, setImage1FormData2] = useState('');
+  const [sellingPoint, setSellingPoint] = useState([]);
+  const [manuCertifications, setManuCertifications] = useState([]);
+  const [productCertifications, setProductCertifications] = useState([]);
+
+  const checkMultiSelectItem = (item: {label: string}, selected: Boolean) => {
+    return (
+      <View style={styles.item}>
+        <Text style={styles.selectedTextStyle}>{item.label}</Text>
+        {selected ? (
+          <FontAwesomeIcon icon={faSquareCheck} size={20} />
+        ) : (
+          <FontAwesomeIcon icon={faSquare} size={20} />
+        )}
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView>
@@ -405,9 +426,27 @@ function Product(): JSX.Element {
                     setFieldValue('sale_for', item.value);
                   }}
                 />
-                {/*
-                specialty_diets
-              */}
+                <Text style={styles.label}>Selling Point</Text>
+                <MultiSelect
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  search={false}
+                  value={sellingPoint}
+                  data={SellingPoint}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select items"
+                  selectedStyle={styles.selectedStyle}
+                  onBlur={() => setFieldTouched('specialty_diets')}
+                  onChange={item => {
+                    setSellingPoint(item);
+                    setFieldValue('specialty_diets', item.join(','));
+                  }}
+                  renderItem={checkMultiSelectItem}
+                />
                 <Input
                   value={values.ingredients_en}
                   label={'Ingredients'}
@@ -802,10 +841,60 @@ function Product(): JSX.Element {
                 {touched.oem_possibility && errors.oem_possibility && (
                   <Text style={styles.errorText}>{errors.oem_possibility}</Text>
                 )}
-                {/* 
-                manufacturer_certification
-                product_certification
-              */}
+                <Text style={styles.label}>Manufacturer Certification(s)</Text>
+                <MultiSelect
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  search={false}
+                  value={manuCertifications}
+                  data={ManufacturerCertifications}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select items"
+                  selectedStyle={styles.selectedStyle}
+                  onBlur={() => setFieldTouched('manufacturer_certification')}
+                  onChange={item => {
+                    setManuCertifications(item);
+                    setFieldValue('manufacturer_certification', item.join(','));
+                  }}
+                  renderItem={checkMultiSelectItem}
+                />
+                {touched.manufacturer_certification &&
+                  errors.manufacturer_certification && (
+                    <Text style={styles.errorText}>
+                      {errors.manufacturer_certification}
+                    </Text>
+                  )}
+                <Text style={styles.label}>Product Certification(s)</Text>
+                <MultiSelect
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  search={false}
+                  value={productCertifications}
+                  data={ProductCertifications}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select items"
+                  selectedStyle={styles.selectedStyle}
+                  onBlur={() => setFieldTouched('product_certification')}
+                  onChange={item => {
+                    setProductCertifications(item);
+                    setFieldValue('product_certification', item.join(','));
+                  }}
+                  renderItem={checkMultiSelectItem}
+                />
+                {touched.product_certification &&
+                  errors.product_certification && (
+                    <Text style={styles.errorText}>
+                      {errors.product_certification}
+                    </Text>
+                  )}
                 <Input
                   value={values.usa_importer}
                   label={'Importer Name'}
@@ -1032,6 +1121,15 @@ const styles = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
+  },
+  selectedStyle: {
+    borderRadius: 12,
+  },
+  item: {
+    padding: 17,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   twoItems: {
     flexDirection: 'row',

@@ -1,5 +1,14 @@
 import React, {useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  Image,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
@@ -21,7 +30,11 @@ import {
   StorageTemperature,
   WeightUnit,
   DeliveryTimeUnit,
+  OEMPossibility,
+  YesNo,
 } from '../constants/product-options';
+import Button from '../components/ui/Button';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 function Product(): JSX.Element {
   const ProductSchema = Yup.object().shape({
@@ -76,8 +89,6 @@ function Product(): JSX.Element {
     cooked: Yup.string().required('Please enter above field'),
     label_handling: Yup.string().required('Please enter above field'),
     import_experience: Yup.string().required('Please enter above field'),
-    sent: Yup.string().required('Please enter above field'),
-    user_id: Yup.string().required('Please enter above field'),
   });
 
   const mainCategory = ProductCategories.mainCategory;
@@ -88,6 +99,10 @@ function Product(): JSX.Element {
   const [subCategory1, setSubCategory1] = useState('');
   const [mainCategory2, setMainCategory2] = useState('');
   const [subCategory2, setSubCategory2] = useState('');
+  const [image1, setImage1] = useState('');
+  const [image1FormData, setImage1FormData] = useState('');
+  const [image2, setImage2] = useState('');
+  const [image1FormData2, setImage1FormData2] = useState('');
 
   return (
     <SafeAreaView>
@@ -144,8 +159,6 @@ function Product(): JSX.Element {
               cooked: '',
               label_handling: '',
               import_experience: '',
-              sent: '',
-              user_id: '',
             }}
             validationSchema={ProductSchema}
             onSubmit={() => {}}>
@@ -298,10 +311,72 @@ function Product(): JSX.Element {
                 {touched.intro_jp && errors.intro_jp && (
                   <Text style={styles.errorText}>{errors.intro_jp}</Text>
                 )}
-                {/* 
-                image_path_1
-                image_path_2
-              */}
+                <Text style={styles.label}>Product Image</Text>
+                <TouchableOpacity
+                  style={styles.browse}
+                  onPress={async () => {
+                    const result: any = await launchImageLibrary({
+                      mediaType: 'photo',
+                    });
+                    if (result) {
+                      setImage1(result.assets[0].uri);
+                      const uri =
+                        Platform.OS === 'android'
+                          ? result.assets[0].uri
+                          : result.assets[0].uri.replace('file://', '');
+                      setImage1FormData({
+                        uri: uri,
+                        type: result.assets[0].type,
+                        name: result.assets[0].fileName,
+                      });
+                    }
+                  }}>
+                  <Text style={styles.browseText}>Browse Image</Text>
+                </TouchableOpacity>
+                {image1 && (
+                  <Image style={styles.image} source={{uri: image1}} />
+                )}
+                {values.image_path_1 && !image1 ? (
+                  <Image
+                    style={styles.image}
+                    source={{
+                      uri: `http://127.0.0.1:8000/images/products/${values.image_path_1}`,
+                    }}
+                  />
+                ) : null}
+                <Text style={styles.label}>Product Image (Back)</Text>
+                <TouchableOpacity
+                  style={styles.browse}
+                  onPress={async () => {
+                    const result: any = await launchImageLibrary({
+                      mediaType: 'photo',
+                    });
+                    if (result) {
+                      setImage2(result.assets[0].uri);
+                      const uri =
+                        Platform.OS === 'android'
+                          ? result.assets[0].uri
+                          : result.assets[0].uri.replace('file://', '');
+                      setImage2FormData({
+                        uri: uri,
+                        type: result.assets[0].type,
+                        name: result.assets[0].fileName,
+                      });
+                    }
+                  }}>
+                  <Text style={styles.browseText}>Browse Image</Text>
+                </TouchableOpacity>
+                {image2 && (
+                  <Image style={styles.image} source={{uri: image2}} />
+                )}
+                {values.image_path_2 && !image2 ? (
+                  <Image
+                    style={styles.image}
+                    source={{
+                      uri: `http://127.0.0.1:8000/images/products/${values.image_path_2}`,
+                    }}
+                  />
+                ) : null}
                 <Input
                   value={values.jan_code}
                   label={'Introduction Video (YouTube URL)'}
@@ -705,8 +780,29 @@ function Product(): JSX.Element {
                       {errors.minimum_order_quantity}
                     </Text>
                   )}
+                <Text style={styles.label}>OEM Possibility</Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  iconStyle={styles.iconStyle}
+                  itemTextStyle={styles.ddItemTextStyle}
+                  data={OEMPossibility}
+                  search={false}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select item"
+                  fontFamily={'Poppins'}
+                  onBlur={() => setFieldTouched('oem_possibility')}
+                  onChange={item => {
+                    setFieldValue('oem_possibility', item.value);
+                  }}
+                />
+                {touched.oem_possibility && errors.oem_possibility && (
+                  <Text style={styles.errorText}>{errors.oem_possibility}</Text>
+                )}
                 {/* 
-                oem_possibility
                 manufacturer_certification
                 product_certification
               */}
@@ -737,12 +833,107 @@ function Product(): JSX.Element {
                 {touched.duns_number && errors.duns_number && (
                   <Text style={styles.errorText}>{errors.duns_number}</Text>
                 )}
-                {/* 
-                recipe
-                cooked
-                label_handling
-                import_experience
-              */}
+                <Text style={styles.label}>
+                  Does the product include recipes?
+                </Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  iconStyle={styles.iconStyle}
+                  itemTextStyle={styles.ddItemTextStyle}
+                  data={YesNo}
+                  search={false}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select item"
+                  fontFamily={'Poppins'}
+                  onBlur={() => setFieldTouched('recipe')}
+                  onChange={item => {
+                    setFieldValue('recipe', item.value);
+                  }}
+                />
+                {touched.recipe && errors.recipe && (
+                  <Text style={styles.errorText}>{errors.recipe}</Text>
+                )}
+                <Text style={styles.label}>
+                  Does the product require cooking?
+                </Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  iconStyle={styles.iconStyle}
+                  itemTextStyle={styles.ddItemTextStyle}
+                  data={YesNo}
+                  search={false}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select item"
+                  fontFamily={'Poppins'}
+                  onBlur={() => setFieldTouched('cooked')}
+                  onChange={item => {
+                    setFieldValue('cooked', item.value);
+                  }}
+                />
+                {touched.cooked && errors.cooked && (
+                  <Text style={styles.errorText}>{errors.cooked}</Text>
+                )}
+                <Text style={styles.label}>
+                  Have you created label for local use?
+                </Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  iconStyle={styles.iconStyle}
+                  itemTextStyle={styles.ddItemTextStyle}
+                  data={YesNo}
+                  search={false}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select item"
+                  fontFamily={'Poppins'}
+                  onBlur={() => setFieldTouched('label_handling')}
+                  onChange={item => {
+                    setFieldValue('label_handling', item.value);
+                  }}
+                />
+                {touched.label_handling && errors.label_handling && (
+                  <Text style={styles.errorText}>{errors.label_handling}</Text>
+                )}
+                <Text style={styles.label}>Previous import experience?</Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  iconStyle={styles.iconStyle}
+                  itemTextStyle={styles.ddItemTextStyle}
+                  data={YesNo}
+                  search={false}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select item"
+                  fontFamily={'Poppins'}
+                  onBlur={() => setFieldTouched('import_experience')}
+                  onChange={item => {
+                    setFieldValue('import_experience', item.value);
+                  }}
+                />
+                {touched.import_experience && errors.import_experience && (
+                  <Text style={styles.errorText}>
+                    {errors.import_experience}
+                  </Text>
+                )}
+                <Button
+                  isDisabled={!isValid}
+                  title={'REGISTER PRODUCT'}
+                  onPress={handleSubmit}
+                />
               </>
             )}
           </Formik>

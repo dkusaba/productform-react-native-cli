@@ -196,3 +196,17 @@ export const DeliveryTimeUnit = [
   {label: 'Days', value: 'Days'},
   {label: 'Months', value: 'Months'},
 ];
+
+export const OEMPossibility = [
+  {label: 'Yes', value: 'Yes'},
+  {
+    label: 'Yes, as long as conditions are met',
+    value: 'Yes, as long as conditions are met',
+  },
+  {label: 'No', value: 'No'},
+];
+
+export const YesNo = [
+  {label: 'Yes', value: 'Yes'},
+  {label: 'No', value: 'No'},
+];

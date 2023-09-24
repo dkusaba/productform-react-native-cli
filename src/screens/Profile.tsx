@@ -159,7 +159,7 @@ function Profile(): JSX.Element {
               formData.append('last_name_jp', values.last_name_jp);
               formData.append('email', values.email);
               formData.append('phone_number', values.phone_number);
-              let response = await userEdit(formData, user.token);
+              let response: any = await userEdit(formData, user.token);
               console.log('profile response', response);
               if (response && response.status === 200) {
                 dispatch(updateProfile(response.data));

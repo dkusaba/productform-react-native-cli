@@ -1,16 +1,27 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import Toast from 'react-native-toast-message';
+import {Dropdown} from 'react-native-element-dropdown';
 
 import type {ProductScreenNavigationProp} from '../types/navigation';
 import {horizontalScale, verticalScale, scaleFontSize} from '../util/scaling';
 import {Colors} from '../constants/colors';
 import Header from '../components/ui/Header';
 import Input from '../components/ui/Input';
+import {
+  ManfactureLocation,
+  ContentWeightUnit,
+  ProductCategories,
+  SaleTarget,
+  ShelfLifeUnit,
+  StorageTemperature,
+  WeightUnit,
+  DeliveryTimeUnit,
+} from '../constants/product-options';
 
 function Product(): JSX.Element {
   const ProductSchema = Yup.object().shape({
@@ -68,7 +79,15 @@ function Product(): JSX.Element {
     sent: Yup.string().required('Please enter above field'),
     user_id: Yup.string().required('Please enter above field'),
   });
+
+  const mainCategory = ProductCategories.mainCategory;
+  const subCategories: any = ProductCategories.subCategories;
   const navigation = useNavigation<ProductScreenNavigationProp>();
+
+  const [mainCategory1, setMainCategory1] = useState('');
+  const [subCategory1, setSubCategory1] = useState('');
+  const [mainCategory2, setMainCategory2] = useState('');
+  const [subCategory2, setSubCategory2] = useState('');
 
   return (
     <SafeAreaView>
@@ -135,6 +154,7 @@ function Product(): JSX.Element {
               touched,
               errors,
               setFieldTouched,
+              setFieldValue,
               handleChange,
               handleSubmit,
               isValid,
@@ -172,12 +192,92 @@ function Product(): JSX.Element {
                 {touched.jan_code && errors.jan_code && (
                   <Text style={styles.errorText}>{errors.jan_code}</Text>
                 )}
-                {/* 
-                category_1_main
-                category_1_sub
-                category_2_main
-                category_2_sub
-              */}
+                <Text style={styles.label}>Main Category 1</Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  iconStyle={styles.iconStyle}
+                  itemTextStyle={styles.ddItemTextStyle}
+                  data={mainCategory}
+                  search={false}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select item"
+                  fontFamily={'Poppins'}
+                  onBlur={() => setFieldTouched('category_1_main')}
+                  onChange={item => {
+                    setMainCategory1(item.value);
+                    setFieldValue('category_1_main', item.value);
+                  }}
+                />
+                {mainCategory1 && (
+                  <>
+                    <Text style={styles.label}>Sub Category 1</Text>
+                    <Dropdown
+                      style={styles.dropdown}
+                      placeholderStyle={styles.placeholderStyle}
+                      selectedTextStyle={styles.selectedTextStyle}
+                      iconStyle={styles.iconStyle}
+                      itemTextStyle={styles.ddItemTextStyle}
+                      data={subCategories[mainCategory1]}
+                      search={false}
+                      maxHeight={300}
+                      labelField="label"
+                      valueField="value"
+                      placeholder="Select item"
+                      fontFamily={'Poppins'}
+                      onBlur={() => setFieldTouched('category_1_sub')}
+                      onChange={item => {
+                        setSubCategory1(item.value);
+                        setFieldValue('category_1_sub', item.value);
+                      }}
+                    />
+                  </>
+                )}
+                <Text style={styles.label}>Main Category 2</Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  iconStyle={styles.iconStyle}
+                  itemTextStyle={styles.ddItemTextStyle}
+                  data={mainCategory}
+                  search={false}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select item"
+                  fontFamily={'Poppins'}
+                  onChange={item => {
+                    setMainCategory2(item.value);
+                    setFieldValue('category_2_main', item.value);
+                  }}
+                />
+                {mainCategory2 && (
+                  <>
+                    <Text style={styles.label}>Sub Category 2</Text>
+                    <Dropdown
+                      style={styles.dropdown}
+                      placeholderStyle={styles.placeholderStyle}
+                      selectedTextStyle={styles.selectedTextStyle}
+                      iconStyle={styles.iconStyle}
+                      itemTextStyle={styles.ddItemTextStyle}
+                      data={subCategories[mainCategory2]}
+                      search={false}
+                      maxHeight={300}
+                      labelField="label"
+                      valueField="value"
+                      placeholder="Select item"
+                      fontFamily={'Poppins'}
+                      onChange={item => {
+                        setSubCategory2(item.value);
+                        setFieldValue('category_2_sub', item.value);
+                      }}
+                    />
+                  </>
+                )}
                 <Input
                   value={values.intro_en}
                   label={'Introduction'}
@@ -211,8 +311,26 @@ function Product(): JSX.Element {
                 {touched.youtube_url && errors.youtube_url && (
                   <Text style={styles.errorText}>{errors.youtube_url}</Text>
                 )}
-                {/* 
-                sale_for
+                <Text style={styles.label}>Sale Target</Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  iconStyle={styles.iconStyle}
+                  itemTextStyle={styles.ddItemTextStyle}
+                  data={SaleTarget}
+                  search={false}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select item"
+                  fontFamily={'Poppins'}
+                  onBlur={() => setFieldTouched('sale_for')}
+                  onChange={item => {
+                    setFieldValue('sale_for', item.value);
+                  }}
+                />
+                {/*
                 specialty_diets
               */}
                 <Input
@@ -255,20 +373,95 @@ function Product(): JSX.Element {
                 {touched.allergens_jp && errors.allergens_jp && (
                   <Text style={styles.errorText}>{errors.allergens_jp}</Text>
                 )}
-                <Input
-                  value={values.shelf_life}
-                  label={'Shelf Life'}
-                  onBlur={() => setFieldTouched('shelf_life')}
-                  onChangeText={handleChange('shelf_life')}
+                <View style={styles.twoItems}>
+                  <View style={styles.halfWidth}>
+                    <Input
+                      value={values.shelf_life}
+                      keyboardType={'numeric'}
+                      label={'Shelf Life'}
+                      onBlur={() => setFieldTouched('shelf_life')}
+                      onChangeText={handleChange('shelf_life')}
+                    />
+                    {touched.shelf_life && errors.shelf_life && (
+                      <Text style={styles.errorText}>{errors.shelf_life}</Text>
+                    )}
+                  </View>
+                  <View style={styles.halfWidth}>
+                    <Text style={styles.label}>Shelf Life Unit</Text>
+                    <Dropdown
+                      style={styles.dropdown}
+                      placeholderStyle={styles.placeholderStyle}
+                      selectedTextStyle={styles.selectedTextStyle}
+                      iconStyle={styles.iconStyle}
+                      itemTextStyle={styles.ddItemTextStyle}
+                      data={ShelfLifeUnit}
+                      search={false}
+                      maxHeight={300}
+                      labelField="label"
+                      valueField="value"
+                      placeholder="Select item"
+                      fontFamily={'Poppins'}
+                      onBlur={() => setFieldTouched('shelf_life_unit')}
+                      onChange={item => {
+                        setFieldValue('shelf_life_unit', item.value);
+                      }}
+                    />
+                    {touched.shelf_life_unit && errors.shelf_life_unit && (
+                      <Text style={styles.errorText}>
+                        {errors.shelf_life_unit}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                <Text style={styles.label}>Storage Temperature Range</Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  iconStyle={styles.iconStyle}
+                  itemTextStyle={styles.ddItemTextStyle}
+                  data={StorageTemperature}
+                  search={false}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select item"
+                  fontFamily={'Poppins'}
+                  onBlur={() => setFieldTouched('storage_temperature')}
+                  onChange={item => {
+                    setFieldValue('storage_temperature', item.value);
+                  }}
                 />
-                {touched.shelf_life && errors.shelf_life && (
-                  <Text style={styles.errorText}>{errors.shelf_life}</Text>
+                {touched.storage_temperature && errors.storage_temperature && (
+                  <Text style={styles.errorText}>
+                    {errors.storage_temperature}
+                  </Text>
                 )}
-                {/* 
-                shelf_life_unit
-                storage_temperature
-                manufacture_location
-              */}
+                <Text style={styles.label}>Manufacture Location</Text>
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  iconStyle={styles.iconStyle}
+                  itemTextStyle={styles.ddItemTextStyle}
+                  data={ManfactureLocation}
+                  search={false}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select item"
+                  fontFamily={'Poppins'}
+                  onBlur={() => setFieldTouched('manufacture_location')}
+                  onChange={item => {
+                    setFieldValue('manufacture_location', item.value);
+                  }}
+                />
+                {touched.manufacture_location &&
+                  errors.manufacture_location && (
+                    <Text style={styles.errorText}>
+                      {errors.manufacture_location}
+                    </Text>
+                  )}
                 <Input
                   value={values.width}
                   label={'Width'}
@@ -296,30 +489,83 @@ function Product(): JSX.Element {
                 {touched.height && errors.height && (
                   <Text style={styles.errorText}>{errors.height}</Text>
                 )}
-                <Input
-                  value={values.net_weight}
-                  label={'Net Weight'}
-                  onBlur={() => setFieldTouched('net_weight')}
-                  onChangeText={handleChange('net_weight')}
-                />
-                {touched.net_weight && errors.net_weight && (
-                  <Text style={styles.errorText}>{errors.net_weight}</Text>
-                )}
-                {/* 
-                net_weight_unit
-              */}
-                <Input
-                  value={values.weight}
-                  label={'Weight'}
-                  onBlur={() => setFieldTouched('weight')}
-                  onChangeText={handleChange('weight')}
-                />
-                {touched.weight && errors.weight && (
-                  <Text style={styles.errorText}>{errors.weight}</Text>
-                )}
-                {/* 
-                weight_unit
-              */}
+                <View style={styles.twoItems}>
+                  <View style={styles.halfWidth}>
+                    <Input
+                      value={values.net_weight}
+                      label={'Content Weight'}
+                      keyboardType={'decimal-pad'}
+                      onBlur={() => setFieldTouched('net_weight')}
+                      onChangeText={handleChange('net_weight')}
+                    />
+                    {touched.net_weight && errors.net_weight && (
+                      <Text style={styles.errorText}>{errors.net_weight}</Text>
+                    )}
+                  </View>
+                  <View style={styles.halfWidth}>
+                    <Text style={styles.label}>Content Weight Unit</Text>
+                    <Dropdown
+                      style={styles.dropdown}
+                      placeholderStyle={styles.placeholderStyle}
+                      selectedTextStyle={styles.selectedTextStyle}
+                      iconStyle={styles.iconStyle}
+                      itemTextStyle={styles.ddItemTextStyle}
+                      data={ContentWeightUnit}
+                      search={false}
+                      maxHeight={300}
+                      labelField="label"
+                      valueField="value"
+                      placeholder="Select item"
+                      fontFamily={'Poppins'}
+                      onBlur={() => setFieldTouched('net_weight_unit')}
+                      onChange={item => {
+                        setFieldValue('net_weight_unit', item.value);
+                      }}
+                    />
+                    {touched.net_weight_unit && errors.net_weight_unit && (
+                      <Text style={styles.errorText}>
+                        {errors.net_weight_unit}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                <View style={styles.twoItems}>
+                  <View style={styles.halfWidth}>
+                    <Input
+                      value={values.weight}
+                      label={'Weight'}
+                      onBlur={() => setFieldTouched('weight')}
+                      onChangeText={handleChange('weight')}
+                    />
+                    {touched.weight && errors.weight && (
+                      <Text style={styles.errorText}>{errors.weight}</Text>
+                    )}
+                  </View>
+                  <View style={styles.halfWidth}>
+                    <Text style={styles.label}>Weight Unit</Text>
+                    <Dropdown
+                      style={styles.dropdown}
+                      placeholderStyle={styles.placeholderStyle}
+                      selectedTextStyle={styles.selectedTextStyle}
+                      iconStyle={styles.iconStyle}
+                      itemTextStyle={styles.ddItemTextStyle}
+                      data={WeightUnit}
+                      search={false}
+                      maxHeight={300}
+                      labelField="label"
+                      valueField="value"
+                      placeholder="Select item"
+                      fontFamily={'Poppins'}
+                      onBlur={() => setFieldTouched('weight_unit')}
+                      onChange={item => {
+                        setFieldValue('weight_unit', item.value);
+                      }}
+                    />
+                    {touched.weight_unit && errors.weight_unit && (
+                      <Text style={styles.errorText}>{errors.weight_unit}</Text>
+                    )}
+                  </View>
+                </View>
                 <Input
                   value={values.item_price}
                   label={'Item Price (Yen)'}
@@ -356,18 +602,47 @@ function Product(): JSX.Element {
                 {touched.case_height && errors.case_height && (
                   <Text style={styles.errorText}>{errors.case_height}</Text>
                 )}
-                <Input
-                  value={values.total_weight}
-                  label={'Total Weight'}
-                  onBlur={() => setFieldTouched('total_weight')}
-                  onChangeText={handleChange('total_weight')}
-                />
-                {touched.total_weight && errors.total_weight && (
-                  <Text style={styles.errorText}>{errors.total_weight}</Text>
-                )}
-                {/* 
-                total_weight_unit
-              */}
+                <View style={styles.twoItems}>
+                  <View style={styles.halfWidth}>
+                    <Input
+                      value={values.total_weight}
+                      label={'Case Weight'}
+                      onBlur={() => setFieldTouched('total_weight')}
+                      onChangeText={handleChange('total_weight')}
+                    />
+                    {touched.total_weight && errors.total_weight && (
+                      <Text style={styles.errorText}>
+                        {errors.total_weight}
+                      </Text>
+                    )}
+                  </View>
+                  <View style={styles.halfWidth}>
+                    <Text style={styles.label}>Case Weight Unit</Text>
+                    <Dropdown
+                      style={styles.dropdown}
+                      placeholderStyle={styles.placeholderStyle}
+                      selectedTextStyle={styles.selectedTextStyle}
+                      iconStyle={styles.iconStyle}
+                      itemTextStyle={styles.ddItemTextStyle}
+                      data={WeightUnit}
+                      search={false}
+                      maxHeight={300}
+                      labelField="label"
+                      valueField="value"
+                      placeholder="Select item"
+                      fontFamily={'Poppins'}
+                      onBlur={() => setFieldTouched('total_weight_unit')}
+                      onChange={item => {
+                        setFieldValue('total_weight_unit', item.value);
+                      }}
+                    />
+                    {touched.total_weight_unit && errors.total_weight_unit && (
+                      <Text style={styles.errorText}>
+                        {errors.total_weight_unit}
+                      </Text>
+                    )}
+                  </View>
+                </View>
                 <Input
                   value={values.quantity_per_case}
                   label={'Quantity Per Case'}
@@ -379,18 +654,45 @@ function Product(): JSX.Element {
                     {errors.quantity_per_case}
                   </Text>
                 )}
-                <Input
-                  value={values.lead_time}
-                  label={'Lead Time'}
-                  onBlur={() => setFieldTouched('lead_time')}
-                  onChangeText={handleChange('lead_time')}
-                />
-                {touched.lead_time && errors.lead_time && (
-                  <Text style={styles.errorText}>{errors.lead_time}</Text>
-                )}
-                {/* 
-                lead_time_unit
-              */}
+                <View style={styles.twoItems}>
+                  <View style={styles.halfWidth}>
+                    <Input
+                      value={values.lead_time}
+                      label={'Delivery Time'}
+                      onBlur={() => setFieldTouched('lead_time')}
+                      onChangeText={handleChange('lead_time')}
+                    />
+                    {touched.lead_time && errors.lead_time && (
+                      <Text style={styles.errorText}>{errors.lead_time}</Text>
+                    )}
+                  </View>
+                  <View style={styles.halfWidth}>
+                    <Text style={styles.label}>Delivery Time Unit</Text>
+                    <Dropdown
+                      style={styles.dropdown}
+                      placeholderStyle={styles.placeholderStyle}
+                      selectedTextStyle={styles.selectedTextStyle}
+                      iconStyle={styles.iconStyle}
+                      itemTextStyle={styles.ddItemTextStyle}
+                      data={DeliveryTimeUnit}
+                      search={false}
+                      maxHeight={300}
+                      labelField="label"
+                      valueField="value"
+                      placeholder="Select item"
+                      fontFamily={'Poppins'}
+                      onBlur={() => setFieldTouched('lead_time_unit')}
+                      onChange={item => {
+                        setFieldValue('lead_time_unit', item.value);
+                      }}
+                    />
+                    {touched.lead_time_unit && errors.lead_time_unit && (
+                      <Text style={styles.errorText}>
+                        {errors.lead_time_unit}
+                      </Text>
+                    )}
+                  </View>
+                </View>
                 <Input
                   value={values.minimum_order_quantity}
                   label={'Minimum order quantity'}
@@ -509,5 +811,42 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins',
     marginTop: verticalScale(3),
     color: '#f00',
+  },
+  dropdown: {
+    padding: horizontalScale(5),
+    height: verticalScale(30),
+    borderColor: Colors.gray600,
+    borderWidth: 1,
+    borderRadius: horizontalScale(10),
+  },
+  ddItemTextStyle: {
+    padding: 0,
+    margin: 0,
+    lineHeight: verticalScale(0),
+    fontSize: scaleFontSize(14),
+  },
+  icon: {
+    marginRight: 5,
+  },
+  placeholderStyle: {
+    fontSize: scaleFontSize(14),
+  },
+  selectedTextStyle: {
+    fontSize: scaleFontSize(14),
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  twoItems: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  halfWidth: {
+    width: '49%',
   },
 });

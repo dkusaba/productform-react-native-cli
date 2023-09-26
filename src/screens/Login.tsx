@@ -20,6 +20,8 @@ import Button from '../components/ui/Button';
 import {Colors} from '../constants/colors';
 import {userLogin} from '../api/user';
 import {logIn} from '../redux/reducers/User';
+import {productGet} from '../api/product';
+import {setInitialProducts} from '../redux/reducers/Product';
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string()
@@ -45,6 +47,10 @@ function Login(): JSX.Element {
     const user = await userLogin(email, password);
     if (user) {
       dispatch(logIn(user));
+      const products = await productGet(user.token);
+      if (products) {
+        dispatch(setInitialProducts(products));
+      }
       navigation.navigate('Dashboard');
     } else {
       Alert.alert('Login failed', 'Invalid credentials. Please try again');
@@ -101,7 +107,7 @@ function Login(): JSX.Element {
               )}
               <Button
                 isDisabled={!isValid}
-                title={'LOGIN'}
+                title={'Login'}
                 onPress={handleSubmit}
               />
               <Pressable

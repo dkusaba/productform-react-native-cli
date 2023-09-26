@@ -1,5 +1,5 @@
-import React from 'react';
-import {Pressable, SafeAreaView} from 'react-native';
+import React, {useEffect} from 'react';
+import {Pressable, SafeAreaView, Text, TouchableOpacity} from 'react-native';
 import * as Keychain from 'react-native-keychain';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
@@ -15,6 +15,7 @@ function Dashboard(): JSX.Element {
   const navigation = useNavigation<DashboardScreenNavigationProp>();
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
+  const products = useSelector((state: RootState) => state.product);
 
   async function logoutHandler() {
     const clearCredentials = await Keychain.resetGenericPassword();
@@ -23,6 +24,10 @@ function Dashboard(): JSX.Element {
       navigation.replace('Login');
     }
   }
+
+  useEffect(() => {
+    console.log(products);
+  });
 
   return (
     <SafeAreaView>
@@ -51,9 +56,22 @@ function Dashboard(): JSX.Element {
         title={'Register a product'}
         isDisabled={false}
         onPress={() => {
-          navigation.navigate('Product');
+          navigation.navigate('Product', {product: null});
         }}
       />
+      {products.items.length &&
+        products.items.map(item => (
+          <TouchableOpacity
+            key={item.id}
+            onPress={() => {
+              console.log(item.id);
+              navigation.navigate('Product', {
+                product: item,
+              });
+            }}>
+            <Text>{item.name_en}</Text>
+          </TouchableOpacity>
+        ))}
     </SafeAreaView>
   );
 }

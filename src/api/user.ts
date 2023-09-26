@@ -1,11 +1,11 @@
 import * as Keychain from 'react-native-keychain';
 import {AxiosError} from 'axios';
 
-import {AuthApi} from './api';
+import {ApiConnect} from './api';
 
 export const userLogin = async (email: string, password: string) => {
   try {
-    const response = await AuthApi('/login', {
+    const response = await ApiConnect('/auth/login', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
@@ -41,7 +41,7 @@ export const userSignUp = async (
   password: string,
 ) => {
   try {
-    const response = await AuthApi('/register', {
+    const response = await ApiConnect('/auth/register', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
@@ -69,7 +69,7 @@ export const userSignUp = async (
 
 export const userEdit = async (data: any, token: string) => {
   try {
-    const response = await AuthApi('/update?token=' + token, {
+    const response = await ApiConnect('/auth/update?token=' + token, {
       method: 'POST',
       headers: {
         'content-type': 'multipart/form-data',

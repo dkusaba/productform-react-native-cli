@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Image,
   Platform,
@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -40,23 +39,22 @@ import {
 } from '../constants/product-options';
 import Button from '../components/ui/Button';
 import {launchImageLibrary} from 'react-native-image-picker';
+import {productCreate, productUpdate} from '../api/product';
+import {RootState} from '../redux/store';
 
-function Product(): JSX.Element {
+function Product({
+  route,
+  navigation,
+}: ProductScreenNavigationProp): JSX.Element {
   const ProductSchema = Yup.object().shape({
     name_en: Yup.string().required('Please enter above field'),
     name_jp: Yup.string().required('Please enter above field'),
-    jan_code: Yup.string().required('Please enter above field'),
     category_1_main: Yup.string().required('Please enter above field'),
     category_1_sub: Yup.string().required('Please enter above field'),
-    category_2_main: Yup.string().required('Please enter above field'),
-    category_2_sub: Yup.string().required('Please enter above field'),
     intro_en: Yup.string().required('Please enter above field'),
     intro_jp: Yup.string().required('Please enter above field'),
-    image_path_1: Yup.string().required('Please enter above field'),
-    image_path_2: Yup.string().required('Please enter above field'),
     youtube_url: Yup.string().required('Please enter above field'),
     sale_for: Yup.string().required('Please enter above field'),
-    specialty_diets: Yup.string().required('Please enter above field'),
     ingredients_en: Yup.string().required('Please enter above field'),
     ingredients_jp: Yup.string().required('Please enter above field'),
     allergens_en: Yup.string().required('Please enter above field'),
@@ -83,34 +81,42 @@ function Product(): JSX.Element {
     lead_time_unit: Yup.string().required('Please enter above field'),
     minimum_order_quantity: Yup.string().required('Please enter above field'),
     oem_possibility: Yup.string().required('Please enter above field'),
-    manufacturer_certification: Yup.string().required(
-      'Please enter above field',
-    ),
-    product_certification: Yup.string().required('Please enter above field'),
-    usa_importer: Yup.string().required('Please enter above field'),
-    fda_id: Yup.string().required('Please enter above field'),
-    duns_number: Yup.string().required('Please enter above field'),
-    recipe: Yup.string().required('Please enter above field'),
-    cooked: Yup.string().required('Please enter above field'),
+    cooked: Yup.string().required('Please select above field'),
     label_handling: Yup.string().required('Please enter above field'),
     import_experience: Yup.string().required('Please enter above field'),
   });
 
+  let product = route.params.product;
+  const user = useSelector((state: RootState) => state.user);
   const mainCategory = ProductCategories.mainCategory;
   const subCategories: any = ProductCategories.subCategories;
-  const navigation = useNavigation<ProductScreenNavigationProp>();
 
   const [mainCategory1, setMainCategory1] = useState('');
+  const mainCategory1Ref = useRef<string>('');
   const [subCategory1, setSubCategory1] = useState('');
+  const subCategory1Ref = useRef<strong>('');
   const [mainCategory2, setMainCategory2] = useState('');
   const [subCategory2, setSubCategory2] = useState('');
   const [image1, setImage1] = useState('');
   const [image1FormData, setImage1FormData] = useState('');
   const [image2, setImage2] = useState('');
-  const [image1FormData2, setImage1FormData2] = useState('');
-  const [sellingPoint, setSellingPoint] = useState([]);
+  const [image2FormData, setImage2FormData] = useState('');
+  const saleTargetRef = useRef<string>('');
+  const sellingPointRef = useRef<string>('');
+  const shelfLifeUnitRef = useRef<string>('');
+  const storageTemperatureRef = useRef<string>('');
+  const manuLocationRef = useRef<string>('');
+  const weightUnitRef = useRef<string>('');
+  const contentWeightUnitRef = useRef<strong>('');
+  const totalWeightUnitRef = useRef<string>('');
+  const leadTimeUnitRef = useRef<string>('');
   const [manuCertifications, setManuCertifications] = useState([]);
   const [productCertifications, setProductCertifications] = useState([]);
+  const oemPossibilityRef = useRef<string>('');
+  const recipeRef = useRef<string>('');
+  const cookedRef = useRef<string>('');
+  const labelHandlingRef = useRef<string>('');
+  const importExpRef = useRef<string>('');
 
   const checkMultiSelectItem = (item: {label: string}, selected: Boolean) => {
     return (
@@ -125,64 +131,177 @@ function Product(): JSX.Element {
     );
   };
 
+  if (!product) {
+    product = {
+      name_en: '',
+      name_jp: '',
+      jan_code: '',
+      category_1_main: '',
+      category_1_sub: '',
+      category_2_main: '',
+      category_2_sub: '',
+      intro_en: '',
+      intro_jp: '',
+      image1: '',
+      image2: '',
+      image_path_1: '',
+      image_path_2: '',
+      youtube_url: '',
+      sale_for: '',
+      specialty_diets: '',
+      ingredients_en: '',
+      ingredients_jp: '',
+      allergens_en: '',
+      allergens_jp: '',
+      shelf_life: '',
+      shelf_life_unit: '',
+      storage_temperature: '',
+      manufacture_location: '',
+      width: '',
+      depth: '',
+      height: '',
+      net_weight: '',
+      net_weight_unit: '',
+      weight: '',
+      weight_unit: '',
+      item_price: '',
+      case_width: '',
+      case_depth: '',
+      case_height: '',
+      total_weight: '',
+      total_weight_unit: '',
+      quantity_per_case: '',
+      lead_time: '',
+      lead_time_unit: '',
+      minimum_order_quantity: '',
+      oem_possibility: '',
+      manufacturer_certification: '',
+      product_certification: '',
+      usa_importer: '',
+      fda_id: '',
+      duns_number: '',
+      recipe: '',
+      cooked: '',
+      label_handling: '',
+      import_experience: '',
+    };
+  }
+
   return (
     <SafeAreaView>
       <ScrollView>
         <View style={styles.container}>
           <Formik
-            initialValues={{
-              name_en: '',
-              name_jp: '',
-              jan_code: '',
-              category_1_main: '',
-              category_1_sub: '',
-              category_2_main: '',
-              category_2_sub: '',
-              intro_en: '',
-              intro_jp: '',
-              image_path_1: '',
-              image_path_2: '',
-              youtube_url: '',
-              sale_for: '',
-              specialty_diets: '',
-              ingredients_en: '',
-              ingredients_jp: '',
-              allergens_en: '',
-              allergens_jp: '',
-              shelf_life: '',
-              shelf_life_unit: '',
-              storage_temperature: '',
-              manufacture_location: '',
-              width: '',
-              depth: '',
-              height: '',
-              net_weight: '',
-              net_weight_unit: '',
-              weight: '',
-              weight_unit: '',
-              item_price: '',
-              case_width: '',
-              case_depth: '',
-              case_height: '',
-              total_weight: '',
-              total_weight_unit: '',
-              quantity_per_case: '',
-              lead_time: '',
-              lead_time_unit: '',
-              minimum_order_quantity: '',
-              oem_possibility: '',
-              manufacturer_certification: '',
-              product_certification: '',
-              usa_importer: '',
-              fda_id: '',
-              duns_number: '',
-              recipe: '',
-              cooked: '',
-              label_handling: '',
-              import_experience: '',
-            }}
+            initialValues={product}
             validationSchema={ProductSchema}
-            onSubmit={() => {}}>
+            onSubmit={async values => {
+              console.log('submitted values', values);
+              let formData = new FormData();
+              if (Object.keys(image1FormData).length > 0) {
+                formData.append('image', image1FormData);
+              } else {
+                formData.append('image_path_1', values.image_path_1);
+              }
+              if (Object.keys(image2FormData).length > 0) {
+                formData.append('image2', image2FormData);
+              } else {
+                formData.append('image_path_2', values.image_path_2);
+              }
+              formData.append('name_en', values.name_en);
+              formData.append('name_jp', values.name_jp);
+              formData.append('jan_code', values.jan_code);
+              formData.append('category_1_main', values.category_1_main);
+              formData.append('category_1_sub', values.category_1_sub);
+              formData.append('category_2_main', values.category_2_main);
+              formData.append('category_2_sub', values.category_2_sub);
+              formData.append('intro_en', values.intro_en);
+              formData.append('intro_jp', values.intro_jp);
+              formData.append('youtube_url', values.youtube_url);
+              formData.append('sale_for', values.sale_for);
+              const specialtyDietsStr = values.specialty_diets.join(',');
+              formData.append('specialty_diets', specialtyDietsStr);
+              formData.append('ingredients_en', values.ingredients_en);
+              formData.append('ingredients_jp', values.ingredients_jp);
+              formData.append('allergens_en', values.allergens_en);
+              formData.append('allergens_jp', values.allergens_jp);
+              formData.append('shelf_life', +values.shelf_life);
+              formData.append('shelf_life_unit', values.shelf_life_unit);
+              formData.append(
+                'storage_temperature',
+                values.storage_temperature,
+              );
+              formData.append(
+                'manufacture_location',
+                values.manufacture_location,
+              );
+              formData.append(
+                'manufacture_location_jp',
+                values.manufacture_location,
+              );
+              formData.append('width', +values.width);
+              formData.append('depth', +values.depth);
+              formData.append('height', +values.height);
+              formData.append('net_weight', +values.net_weight);
+              formData.append('net_weight_unit', values.net_weight_unit);
+              formData.append('weight', +values.weight);
+              formData.append('weight_unit', values.weight_unit);
+              formData.append('item_price', values.item_price);
+              formData.append('case_width', +values.case_width);
+              formData.append('case_depth', +values.case_depth);
+              formData.append('case_height', +values.case_height);
+              formData.append('total_weight', +values.total_weight);
+              formData.append('total_weight_unit', values.total_weight_unit);
+              formData.append('quantity_per_case', +values.quantity_per_case);
+              formData.append('lead_time', +values.lead_time);
+              formData.append('lead_time_unit', values.lead_time_unit);
+              formData.append(
+                'minimum_order_quantity',
+                +values.minimum_order_quantity,
+              );
+              formData.append('oem_possibility', values.oem_possibility);
+              const manuCertStr = values.manufacturer_certification.join(',');
+              formData.append('manufacturer_certification', manuCertStr);
+              const productCertStr = values.product_certification.join(',');
+              formData.append('product_certification', productCertStr);
+              if (values.usa_importer === '') {
+                formData.append('usa_importer', '無');
+              } else {
+                formData.append('usa_importer', '有 | ' + values.usa_importer);
+              }
+
+              if (values.fda_id === '') {
+                formData.append('fda_id', '無');
+              } else {
+                formData.append('fda_id', '有 | ' + values.fda_id);
+              }
+
+              if (values.duns_number === '') {
+                formData.append('duns_number', '無');
+              } else {
+                formData.append('duns_number', '有 | ' + values.duns_number);
+              }
+
+              formData.append('recipe', values.recipe);
+              formData.append('cooked', values.cooked);
+              formData.append('label_handling', values.label_handling);
+              formData.append('import_experience', values.import_experience);
+
+              console.log('formData', formData);
+              let response;
+              if (product.id) {
+                response = await productUpdate(
+                  user.token,
+                  product.id,
+                  formData,
+                );
+              } else {
+                response = await productCreate(user.token, formData);
+              }
+
+              if (response) {
+                console.log(response);
+              }
+            }}>
             {({
               values,
               touched,
@@ -192,6 +311,7 @@ function Product(): JSX.Element {
               handleChange,
               handleSubmit,
               isValid,
+              validateField,
             }) => (
               <>
                 <Header type={1}>Product Information</Header>
@@ -200,7 +320,7 @@ function Product(): JSX.Element {
                   English instead.
                 </Text>
                 <Input
-                  value={values.name_en}
+                  value={values.name_en?.toString()}
                   label={'Product Name'}
                   onBlur={() => setFieldTouched('name_en')}
                   onChangeText={handleChange('name_en')}
@@ -209,7 +329,7 @@ function Product(): JSX.Element {
                   <Text style={styles.errorText}>{errors.name_en}</Text>
                 )}
                 <Input
-                  value={values.name_jp}
+                  value={values.name_jp?.toString()}
                   label={'Product Name (Japanese)'}
                   onBlur={() => setFieldTouched('name_jp')}
                   onChangeText={handleChange('name_jp')}
@@ -218,7 +338,7 @@ function Product(): JSX.Element {
                   <Text style={styles.errorText}>{errors.name_jp}</Text>
                 )}
                 <Input
-                  value={values.jan_code}
+                  value={values.jan_code?.toString()}
                   label={'JAN Code'}
                   onBlur={() => setFieldTouched('jan_code')}
                   onChangeText={handleChange('jan_code')}
@@ -243,9 +363,17 @@ function Product(): JSX.Element {
                   onBlur={() => setFieldTouched('category_1_main')}
                   onChange={item => {
                     setMainCategory1(item.value);
+                    mainCategory1Ref.current = item.value;
                     setFieldValue('category_1_main', item.value);
                   }}
                 />
+                {touched.category_1_main &&
+                  errors.category_1_main &&
+                  mainCategory1Ref.current === '' && (
+                    <Text style={styles.errorText}>
+                      {errors.category_1_main}
+                    </Text>
+                  )}
                 {mainCategory1 && (
                   <>
                     <Text style={styles.label}>Sub Category 1</Text>
@@ -256,6 +384,7 @@ function Product(): JSX.Element {
                       iconStyle={styles.iconStyle}
                       itemTextStyle={styles.ddItemTextStyle}
                       data={subCategories[mainCategory1]}
+                      value={values.category_1_sub}
                       search={false}
                       maxHeight={300}
                       labelField="label"
@@ -265,9 +394,17 @@ function Product(): JSX.Element {
                       onBlur={() => setFieldTouched('category_1_sub')}
                       onChange={item => {
                         setSubCategory1(item.value);
+                        subCategory1Ref.current = item.value;
                         setFieldValue('category_1_sub', item.value);
                       }}
                     />
+                    {touched.category_1_sub &&
+                      errors.category_1_sub &&
+                      subCategory1Ref.current === '' && (
+                        <Text style={styles.errorText}>
+                          {errors.category_1_sub}
+                        </Text>
+                      )}
                   </>
                 )}
                 <Text style={styles.label}>Main Category 2</Text>
@@ -313,7 +450,7 @@ function Product(): JSX.Element {
                   </>
                 )}
                 <Input
-                  value={values.intro_en}
+                  value={values.intro_en?.toString()}
                   label={'Introduction'}
                   multiline={true}
                   onBlur={() => setFieldTouched('intro_en')}
@@ -323,7 +460,7 @@ function Product(): JSX.Element {
                   <Text style={styles.errorText}>{errors.intro_en}</Text>
                 )}
                 <Input
-                  value={values.intro_jp}
+                  value={values.intro_jp?.toString()}
                   label={'Introduction (Japanese)'}
                   multiline={true}
                   onBlur={() => setFieldTouched('intro_jp')}
@@ -399,7 +536,7 @@ function Product(): JSX.Element {
                   />
                 ) : null}
                 <Input
-                  value={values.jan_code}
+                  value={values.youtube_url?.toString()}
                   label={'Introduction Video (YouTube URL)'}
                   onBlur={() => setFieldTouched('youtube_url')}
                   onChangeText={handleChange('youtube_url')}
@@ -423,9 +560,15 @@ function Product(): JSX.Element {
                   fontFamily={'Poppins'}
                   onBlur={() => setFieldTouched('sale_for')}
                   onChange={item => {
+                    saleTargetRef.current = item.value;
                     setFieldValue('sale_for', item.value);
                   }}
                 />
+                {touched.sale_for &&
+                  errors.sale_for &&
+                  saleTargetRef.current === '' && (
+                    <Text style={styles.errorText}>{errors.sale_for}</Text>
+                  )}
                 <Text style={styles.label}>Selling Point</Text>
                 <MultiSelect
                   style={styles.dropdown}
@@ -434,21 +577,21 @@ function Product(): JSX.Element {
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
                   search={false}
-                  value={sellingPoint}
                   data={SellingPoint}
+                  value={values.specialty_diets}
                   labelField="label"
                   valueField="value"
                   placeholder="Select items"
                   selectedStyle={styles.selectedStyle}
                   onBlur={() => setFieldTouched('specialty_diets')}
                   onChange={item => {
-                    setSellingPoint(item);
-                    setFieldValue('specialty_diets', item.join(','));
+                    console.log(item);
+                    setFieldValue('specialty_diets', item);
                   }}
                   renderItem={checkMultiSelectItem}
                 />
                 <Input
-                  value={values.ingredients_en}
+                  value={values.ingredients_en?.toString()}
                   label={'Ingredients'}
                   multiline={true}
                   onBlur={() => setFieldTouched('ingredients_en')}
@@ -458,7 +601,7 @@ function Product(): JSX.Element {
                   <Text style={styles.errorText}>{errors.ingredients_en}</Text>
                 )}
                 <Input
-                  value={values.ingredients_jp}
+                  value={values.ingredients_jp?.toString()}
                   label={'Ingredients (Japanese)'}
                   multiline={true}
                   onBlur={() => setFieldTouched('ingredients_jp')}
@@ -468,7 +611,7 @@ function Product(): JSX.Element {
                   <Text style={styles.errorText}>{errors.ingredients_jp}</Text>
                 )}
                 <Input
-                  value={values.allergens_en}
+                  value={values.allergens_en?.toString()}
                   label={'Allergens'}
                   multiline={true}
                   onBlur={() => setFieldTouched('allergens_en')}
@@ -478,7 +621,7 @@ function Product(): JSX.Element {
                   <Text style={styles.errorText}>{errors.allergens_en}</Text>
                 )}
                 <Input
-                  value={values.ingredients_jp}
+                  value={values.allergens_jp?.toString()}
                   label={'Allergens (Japanese)'}
                   multiline={true}
                   onBlur={() => setFieldTouched('allergens_jp')}
@@ -490,7 +633,7 @@ function Product(): JSX.Element {
                 <View style={styles.twoItems}>
                   <View style={styles.halfWidth}>
                     <Input
-                      value={values.shelf_life}
+                      value={values.shelf_life?.toString()}
                       keyboardType={'numeric'}
                       label={'Shelf Life'}
                       onBlur={() => setFieldTouched('shelf_life')}
@@ -517,14 +660,17 @@ function Product(): JSX.Element {
                       fontFamily={'Poppins'}
                       onBlur={() => setFieldTouched('shelf_life_unit')}
                       onChange={item => {
+                        shelfLifeUnitRef.current = item.value;
                         setFieldValue('shelf_life_unit', item.value);
                       }}
                     />
-                    {touched.shelf_life_unit && errors.shelf_life_unit && (
-                      <Text style={styles.errorText}>
-                        {errors.shelf_life_unit}
-                      </Text>
-                    )}
+                    {touched.shelf_life_unit &&
+                      errors.shelf_life_unit &&
+                      shelfLifeUnitRef.current === '' && (
+                        <Text style={styles.errorText}>
+                          {errors.shelf_life_unit}
+                        </Text>
+                      )}
                   </View>
                 </View>
                 <Text style={styles.label}>Storage Temperature Range</Text>
@@ -543,14 +689,17 @@ function Product(): JSX.Element {
                   fontFamily={'Poppins'}
                   onBlur={() => setFieldTouched('storage_temperature')}
                   onChange={item => {
+                    storageTemperatureRef.current = item.value;
                     setFieldValue('storage_temperature', item.value);
                   }}
                 />
-                {touched.storage_temperature && errors.storage_temperature && (
-                  <Text style={styles.errorText}>
-                    {errors.storage_temperature}
-                  </Text>
-                )}
+                {touched.storage_temperature &&
+                  errors.storage_temperature &&
+                  storageTemperatureRef.current === '' && (
+                    <Text style={styles.errorText}>
+                      {errors.storage_temperature}
+                    </Text>
+                  )}
                 <Text style={styles.label}>Manufacture Location</Text>
                 <Dropdown
                   style={styles.dropdown}
@@ -567,17 +716,19 @@ function Product(): JSX.Element {
                   fontFamily={'Poppins'}
                   onBlur={() => setFieldTouched('manufacture_location')}
                   onChange={item => {
+                    manuLocationRef.current = item.value;
                     setFieldValue('manufacture_location', item.value);
                   }}
                 />
                 {touched.manufacture_location &&
-                  errors.manufacture_location && (
+                  errors.manufacture_location &&
+                  manuLocationRef.current === '' && (
                     <Text style={styles.errorText}>
                       {errors.manufacture_location}
                     </Text>
                   )}
                 <Input
-                  value={values.width}
+                  value={values.width?.toString()}
                   label={'Width'}
                   onBlur={() => setFieldTouched('width')}
                   onChangeText={handleChange('width')}
@@ -586,7 +737,7 @@ function Product(): JSX.Element {
                   <Text style={styles.errorText}>{errors.width}</Text>
                 )}
                 <Input
-                  value={values.depth}
+                  value={values.depth?.toString()}
                   label={'Depth'}
                   onBlur={() => setFieldTouched('depth')}
                   onChangeText={handleChange('depth')}
@@ -595,7 +746,7 @@ function Product(): JSX.Element {
                   <Text style={styles.errorText}>{errors.depth}</Text>
                 )}
                 <Input
-                  value={values.height}
+                  value={values.height?.toString()}
                   label={'Height'}
                   onBlur={() => setFieldTouched('height')}
                   onChangeText={handleChange('height')}
@@ -606,7 +757,7 @@ function Product(): JSX.Element {
                 <View style={styles.twoItems}>
                   <View style={styles.halfWidth}>
                     <Input
-                      value={values.net_weight}
+                      value={values.net_weight?.toString()}
                       label={'Content Weight'}
                       keyboardType={'decimal-pad'}
                       onBlur={() => setFieldTouched('net_weight')}
@@ -633,20 +784,23 @@ function Product(): JSX.Element {
                       fontFamily={'Poppins'}
                       onBlur={() => setFieldTouched('net_weight_unit')}
                       onChange={item => {
+                        contentWeightUnitRef.current = item.value;
                         setFieldValue('net_weight_unit', item.value);
                       }}
                     />
-                    {touched.net_weight_unit && errors.net_weight_unit && (
-                      <Text style={styles.errorText}>
-                        {errors.net_weight_unit}
-                      </Text>
-                    )}
+                    {touched.net_weight_unit &&
+                      errors.net_weight_unit &&
+                      contentWeightUnitRef.current === '' && (
+                        <Text style={styles.errorText}>
+                          {errors.net_weight_unit}
+                        </Text>
+                      )}
                   </View>
                 </View>
                 <View style={styles.twoItems}>
                   <View style={styles.halfWidth}>
                     <Input
-                      value={values.weight}
+                      value={values.weight?.toString()}
                       label={'Weight'}
                       onBlur={() => setFieldTouched('weight')}
                       onChangeText={handleChange('weight')}
@@ -664,6 +818,7 @@ function Product(): JSX.Element {
                       iconStyle={styles.iconStyle}
                       itemTextStyle={styles.ddItemTextStyle}
                       data={WeightUnit}
+                      value={values.weight_unit}
                       search={false}
                       maxHeight={300}
                       labelField="label"
@@ -672,16 +827,21 @@ function Product(): JSX.Element {
                       fontFamily={'Poppins'}
                       onBlur={() => setFieldTouched('weight_unit')}
                       onChange={item => {
+                        weightUnitRef.current = item.value;
                         setFieldValue('weight_unit', item.value);
                       }}
                     />
-                    {touched.weight_unit && errors.weight_unit && (
-                      <Text style={styles.errorText}>{errors.weight_unit}</Text>
-                    )}
+                    {touched.weight_unit &&
+                      errors.weight_unit &&
+                      weightUnitRef.current === '' && (
+                        <Text style={styles.errorText}>
+                          {errors.weight_unit}
+                        </Text>
+                      )}
                   </View>
                 </View>
                 <Input
-                  value={values.item_price}
+                  value={values.item_price?.toString()}
                   label={'Item Price (Yen)'}
                   onBlur={() => setFieldTouched('item_price')}
                   onChangeText={handleChange('item_price')}
@@ -690,7 +850,7 @@ function Product(): JSX.Element {
                   <Text style={styles.errorText}>{errors.item_price}</Text>
                 )}
                 <Input
-                  value={values.case_width}
+                  value={values.case_width?.toString()}
                   label={'Case Width (centimeters)'}
                   onBlur={() => setFieldTouched('case_width')}
                   onChangeText={handleChange('case_width')}
@@ -699,7 +859,7 @@ function Product(): JSX.Element {
                   <Text style={styles.errorText}>{errors.case_width}</Text>
                 )}
                 <Input
-                  value={values.case_depth}
+                  value={values.case_depth?.toString()}
                   label={'Case Depth (centimeters)'}
                   onBlur={() => setFieldTouched('case_depth')}
                   onChangeText={handleChange('case_depth')}
@@ -708,7 +868,7 @@ function Product(): JSX.Element {
                   <Text style={styles.errorText}>{errors.case_depth}</Text>
                 )}
                 <Input
-                  value={values.case_height}
+                  value={values.case_height?.toString()}
                   label={'Case Height (centimeters)'}
                   onBlur={() => setFieldTouched('case_height')}
                   onChangeText={handleChange('case_height')}
@@ -719,7 +879,7 @@ function Product(): JSX.Element {
                 <View style={styles.twoItems}>
                   <View style={styles.halfWidth}>
                     <Input
-                      value={values.total_weight}
+                      value={values.total_weight?.toString()}
                       label={'Case Weight'}
                       onBlur={() => setFieldTouched('total_weight')}
                       onChangeText={handleChange('total_weight')}
@@ -739,6 +899,7 @@ function Product(): JSX.Element {
                       iconStyle={styles.iconStyle}
                       itemTextStyle={styles.ddItemTextStyle}
                       data={WeightUnit}
+                      value={values.total_weight_unit}
                       search={false}
                       maxHeight={300}
                       labelField="label"
@@ -747,18 +908,21 @@ function Product(): JSX.Element {
                       fontFamily={'Poppins'}
                       onBlur={() => setFieldTouched('total_weight_unit')}
                       onChange={item => {
+                        totalWeightUnitRef.current = item.value;
                         setFieldValue('total_weight_unit', item.value);
                       }}
                     />
-                    {touched.total_weight_unit && errors.total_weight_unit && (
-                      <Text style={styles.errorText}>
-                        {errors.total_weight_unit}
-                      </Text>
-                    )}
+                    {touched.total_weight_unit &&
+                      errors.total_weight_unit &&
+                      totalWeightUnitRef.current === '' && (
+                        <Text style={styles.errorText}>
+                          {errors.total_weight_unit}
+                        </Text>
+                      )}
                   </View>
                 </View>
                 <Input
-                  value={values.quantity_per_case}
+                  value={values.quantity_per_case?.toString()}
                   label={'Quantity Per Case'}
                   onBlur={() => setFieldTouched('quantity_per_case')}
                   onChangeText={handleChange('quantity_per_case')}
@@ -771,7 +935,7 @@ function Product(): JSX.Element {
                 <View style={styles.twoItems}>
                   <View style={styles.halfWidth}>
                     <Input
-                      value={values.lead_time}
+                      value={values.lead_time?.toString()}
                       label={'Delivery Time'}
                       onBlur={() => setFieldTouched('lead_time')}
                       onChangeText={handleChange('lead_time')}
@@ -789,6 +953,7 @@ function Product(): JSX.Element {
                       iconStyle={styles.iconStyle}
                       itemTextStyle={styles.ddItemTextStyle}
                       data={DeliveryTimeUnit}
+                      value={values.lead_time_unit}
                       search={false}
                       maxHeight={300}
                       labelField="label"
@@ -797,18 +962,21 @@ function Product(): JSX.Element {
                       fontFamily={'Poppins'}
                       onBlur={() => setFieldTouched('lead_time_unit')}
                       onChange={item => {
+                        leadTimeUnitRef.current = item.value;
                         setFieldValue('lead_time_unit', item.value);
                       }}
                     />
-                    {touched.lead_time_unit && errors.lead_time_unit && (
-                      <Text style={styles.errorText}>
-                        {errors.lead_time_unit}
-                      </Text>
-                    )}
+                    {touched.lead_time_unit &&
+                      errors.lead_time_unit &&
+                      leadTimeUnitRef.current === '' && (
+                        <Text style={styles.errorText}>
+                          {errors.lead_time_unit}
+                        </Text>
+                      )}
                   </View>
                 </View>
                 <Input
-                  value={values.minimum_order_quantity}
+                  value={values.minimum_order_quantity?.toString()}
                   label={'Minimum order quantity'}
                   onBlur={() => setFieldTouched('minimum_order_quantity')}
                   onChangeText={handleChange('minimum_order_quantity')}
@@ -827,20 +995,18 @@ function Product(): JSX.Element {
                   iconStyle={styles.iconStyle}
                   itemTextStyle={styles.ddItemTextStyle}
                   data={OEMPossibility}
+                  value={values.oem_possibility}
                   search={false}
                   maxHeight={300}
                   labelField="label"
                   valueField="value"
                   placeholder="Select item"
                   fontFamily={'Poppins'}
-                  onBlur={() => setFieldTouched('oem_possibility')}
                   onChange={item => {
+                    oemPossibilityRef.current = item.value;
                     setFieldValue('oem_possibility', item.value);
                   }}
                 />
-                {touched.oem_possibility && errors.oem_possibility && (
-                  <Text style={styles.errorText}>{errors.oem_possibility}</Text>
-                )}
                 <Text style={styles.label}>Manufacturer Certification(s)</Text>
                 <MultiSelect
                   style={styles.dropdown}
@@ -849,25 +1015,19 @@ function Product(): JSX.Element {
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
                   search={false}
-                  value={manuCertifications}
                   data={ManufacturerCertifications}
+                  value={values.manufacturer_certification}
                   labelField="label"
                   valueField="value"
                   placeholder="Select items"
                   selectedStyle={styles.selectedStyle}
-                  onBlur={() => setFieldTouched('manufacturer_certification')}
                   onChange={item => {
+                    console.log(item);
+                    setFieldValue('manufacturer_certification', item);
                     setManuCertifications(item);
-                    setFieldValue('manufacturer_certification', item.join(','));
                   }}
                   renderItem={checkMultiSelectItem}
                 />
-                {touched.manufacturer_certification &&
-                  errors.manufacturer_certification && (
-                    <Text style={styles.errorText}>
-                      {errors.manufacturer_certification}
-                    </Text>
-                  )}
                 <Text style={styles.label}>Product Certification(s)</Text>
                 <MultiSelect
                   style={styles.dropdown}
@@ -876,27 +1036,22 @@ function Product(): JSX.Element {
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
                   search={false}
-                  value={productCertifications}
                   data={ProductCertifications}
+                  value={productCertifications}
                   labelField="label"
                   valueField="value"
                   placeholder="Select items"
                   selectedStyle={styles.selectedStyle}
                   onBlur={() => setFieldTouched('product_certification')}
                   onChange={item => {
+                    console.log(item);
                     setProductCertifications(item);
-                    setFieldValue('product_certification', item.join(','));
+                    setFieldValue('product_certification', item);
                   }}
                   renderItem={checkMultiSelectItem}
                 />
-                {touched.product_certification &&
-                  errors.product_certification && (
-                    <Text style={styles.errorText}>
-                      {errors.product_certification}
-                    </Text>
-                  )}
                 <Input
-                  value={values.usa_importer}
+                  value={values.usa_importer?.toString()}
                   label={'Importer Name'}
                   onBlur={() => setFieldTouched('usa_importer')}
                   onChangeText={handleChange('usa_importer')}
@@ -905,23 +1060,17 @@ function Product(): JSX.Element {
                   <Text style={styles.errorText}>{errors.usa_importer}</Text>
                 )}
                 <Input
-                  value={values.fda_id}
+                  value={values.fda_id?.toString()}
                   label={'FDA Registration ID'}
                   onBlur={() => setFieldTouched('fda_id')}
                   onChangeText={handleChange('fda_id')}
                 />
-                {touched.fda_id && errors.fda_id && (
-                  <Text style={styles.errorText}>{errors.fda_id}</Text>
-                )}
                 <Input
-                  value={values.duns_number}
+                  value={values.duns_number?.toString()}
                   label={'D-U-N-S® Number'}
                   onBlur={() => setFieldTouched('duns_number')}
                   onChangeText={handleChange('duns_number')}
                 />
-                {touched.duns_number && errors.duns_number && (
-                  <Text style={styles.errorText}>{errors.duns_number}</Text>
-                )}
                 <Text style={styles.label}>
                   Does the product include recipes?
                 </Text>
@@ -932,20 +1081,18 @@ function Product(): JSX.Element {
                   iconStyle={styles.iconStyle}
                   itemTextStyle={styles.ddItemTextStyle}
                   data={YesNo}
+                  value={values.recipe}
                   search={false}
                   maxHeight={300}
                   labelField="label"
                   valueField="value"
                   placeholder="Select item"
                   fontFamily={'Poppins'}
-                  onBlur={() => setFieldTouched('recipe')}
                   onChange={item => {
+                    recipeRef.current = item.value;
                     setFieldValue('recipe', item.value);
                   }}
                 />
-                {touched.recipe && errors.recipe && (
-                  <Text style={styles.errorText}>{errors.recipe}</Text>
-                )}
                 <Text style={styles.label}>
                   Does the product require cooking?
                 </Text>
@@ -956,6 +1103,7 @@ function Product(): JSX.Element {
                   iconStyle={styles.iconStyle}
                   itemTextStyle={styles.ddItemTextStyle}
                   data={YesNo}
+                  value={values.cooked}
                   search={false}
                   maxHeight={300}
                   labelField="label"
@@ -964,12 +1112,15 @@ function Product(): JSX.Element {
                   fontFamily={'Poppins'}
                   onBlur={() => setFieldTouched('cooked')}
                   onChange={item => {
+                    cookedRef.current = item.value;
                     setFieldValue('cooked', item.value);
                   }}
                 />
-                {touched.cooked && errors.cooked && (
-                  <Text style={styles.errorText}>{errors.cooked}</Text>
-                )}
+                {touched.cooked &&
+                  errors.cooked &&
+                  cookedRef.current === '' && (
+                    <Text style={styles.errorText}>{errors.cooked}</Text>
+                  )}
                 <Text style={styles.label}>
                   Have you created label for local use?
                 </Text>
@@ -980,6 +1131,7 @@ function Product(): JSX.Element {
                   iconStyle={styles.iconStyle}
                   itemTextStyle={styles.ddItemTextStyle}
                   data={YesNo}
+                  value={values.label_handling}
                   search={false}
                   maxHeight={300}
                   labelField="label"
@@ -988,12 +1140,17 @@ function Product(): JSX.Element {
                   fontFamily={'Poppins'}
                   onBlur={() => setFieldTouched('label_handling')}
                   onChange={item => {
+                    labelHandlingRef.current = item.value;
                     setFieldValue('label_handling', item.value);
                   }}
                 />
-                {touched.label_handling && errors.label_handling && (
-                  <Text style={styles.errorText}>{errors.label_handling}</Text>
-                )}
+                {touched.label_handling &&
+                  errors.label_handling &&
+                  labelHandlingRef.current === '' && (
+                    <Text style={styles.errorText}>
+                      Please select above field
+                    </Text>
+                  )}
                 <Text style={styles.label}>Previous import experience?</Text>
                 <Dropdown
                   style={styles.dropdown}
@@ -1002,6 +1159,7 @@ function Product(): JSX.Element {
                   iconStyle={styles.iconStyle}
                   itemTextStyle={styles.ddItemTextStyle}
                   data={YesNo}
+                  value={values.import_experience}
                   search={false}
                   maxHeight={300}
                   labelField="label"
@@ -1010,17 +1168,20 @@ function Product(): JSX.Element {
                   fontFamily={'Poppins'}
                   onBlur={() => setFieldTouched('import_experience')}
                   onChange={item => {
+                    importExpRef.current = item.value;
                     setFieldValue('import_experience', item.value);
                   }}
                 />
-                {touched.import_experience && errors.import_experience && (
-                  <Text style={styles.errorText}>
-                    {errors.import_experience}
-                  </Text>
-                )}
+                {touched.import_experience &&
+                  errors.import_experience &&
+                  importExpRef.current === '' && (
+                    <Text style={styles.errorText}>
+                      {errors.import_experience}
+                    </Text>
+                  )}
                 <Button
-                  isDisabled={!isValid}
-                  title={'REGISTER PRODUCT'}
+                  isDisabled={false}
+                  title={product.id ? 'UPDATE PRODUCT' : 'REGISTER PRODUCT'}
                   onPress={handleSubmit}
                 />
               </>

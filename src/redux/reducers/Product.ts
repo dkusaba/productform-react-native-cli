@@ -17,7 +17,7 @@ export type Product = {
   image_path_2: string;
   youtube_url: string;
   sale_for: string;
-  specialty_diets: string;
+  specialty_diets: string | string[];
   ingredients_en: string;
   ingredients_jp: string;
   allergens_en: string;
@@ -44,8 +44,8 @@ export type Product = {
   lead_time_unit: string;
   minimum_order_quantity: number;
   oem_possibility: string;
-  manufacturer_certification: string;
-  product_certification: string;
+  manufacturer_certification: string | string[];
+  product_certification: string | string[];
   usa_importer: string;
   fda_id: string;
   duns_number: string;

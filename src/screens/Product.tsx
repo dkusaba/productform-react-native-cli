@@ -98,7 +98,6 @@ function Product({
   const [image2, setImage2] = useState('');
   const [image2FormData, setImage2FormData] = useState('');
   const saleTargetRef = useRef<string>('');
-  const sellingPointRef = useRef<string>('');
   const shelfLifeUnitRef = useRef<string>('');
   const storageTemperatureRef = useRef<string>('');
   const manuLocationRef = useRef<string>('');
@@ -106,8 +105,6 @@ function Product({
   const contentWeightUnitRef = useRef<strong>('');
   const totalWeightUnitRef = useRef<string>('');
   const leadTimeUnitRef = useRef<string>('');
-  const [manuCertifications, setManuCertifications] = useState([]);
-  const [productCertifications, setProductCertifications] = useState([]);
   const oemPossibilityRef = useRef<string>('');
   const recipeRef = useRef<string>('');
   const cookedRef = useRef<string>('');
@@ -180,6 +177,22 @@ function Product({
       cooked: '',
       label_handling: '',
       import_experience: '',
+    };
+  } else {
+    product = {
+      ...product,
+      specialty_diets: product.specialty_diets.split(','),
+      manufacturer_certification: product.manufacturer_certification.split(','),
+      product_certification: product.product_certification.split(','),
+      usa_importer:
+        product.usa_importer === '無'
+          ? ''
+          : product.usa_importer.split('有 | ')[1],
+      fda_id: product.fda_id === '無' ? '' : product.fda_id.split('有 | ')[1],
+      duns_number:
+        product.duns_number === '無'
+          ? ''
+          : product.duns_number.split('有 | ')[1],
     };
   }
 
@@ -437,9 +450,9 @@ function Product({
                       valueField="value"
                       placeholder="Select item"
                       fontFamily={'Poppins'}
-                      onChange={item => {
-                        setFieldValue('category_2_sub', item.value);
-                      }}
+                      onChange={item =>
+                        setFieldValue('category_2_sub', item.value)
+                      }
                     />
                   </>
                 )}
@@ -1016,9 +1029,7 @@ function Product({
                   placeholder="Select items"
                   selectedStyle={styles.selectedStyle}
                   onChange={item => {
-                    console.log(item);
                     setFieldValue('manufacturer_certification', item);
-                    setManuCertifications(item);
                   }}
                   renderItem={checkMultiSelectItem}
                 />
@@ -1031,15 +1042,13 @@ function Product({
                   iconStyle={styles.iconStyle}
                   search={false}
                   data={ProductCertifications}
-                  value={productCertifications}
+                  value={values.product_certification}
                   labelField="label"
                   valueField="value"
                   placeholder="Select items"
                   selectedStyle={styles.selectedStyle}
                   onBlur={() => setFieldTouched('product_certification')}
                   onChange={item => {
-                    console.log(item);
-                    setProductCertifications(item);
                     setFieldValue('product_certification', item);
                   }}
                   renderItem={checkMultiSelectItem}

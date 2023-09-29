@@ -91,12 +91,8 @@ function Product({
   const mainCategory = ProductCategories.mainCategory;
   const subCategories: any = ProductCategories.subCategories;
 
-  const [mainCategory1, setMainCategory1] = useState('');
   const mainCategory1Ref = useRef<string>('');
-  const [subCategory1, setSubCategory1] = useState('');
   const subCategory1Ref = useRef<strong>('');
-  const [mainCategory2, setMainCategory2] = useState('');
-  const [subCategory2, setSubCategory2] = useState('');
   const [image1, setImage1] = useState('');
   const [image1FormData, setImage1FormData] = useState('');
   const [image2, setImage2] = useState('');
@@ -311,7 +307,6 @@ function Product({
               handleChange,
               handleSubmit,
               isValid,
-              validateField,
             }) => (
               <>
                 <Header type={1}>Product Information</Header>
@@ -354,6 +349,7 @@ function Product({
                   iconStyle={styles.iconStyle}
                   itemTextStyle={styles.ddItemTextStyle}
                   data={mainCategory}
+                  value={values.category_1_main}
                   search={false}
                   maxHeight={300}
                   labelField="label"
@@ -362,7 +358,6 @@ function Product({
                   fontFamily={'Poppins'}
                   onBlur={() => setFieldTouched('category_1_main')}
                   onChange={item => {
-                    setMainCategory1(item.value);
                     mainCategory1Ref.current = item.value;
                     setFieldValue('category_1_main', item.value);
                   }}
@@ -374,7 +369,7 @@ function Product({
                       {errors.category_1_main}
                     </Text>
                   )}
-                {mainCategory1 && (
+                {values.category_1_main && (
                   <>
                     <Text style={styles.label}>Sub Category 1</Text>
                     <Dropdown
@@ -383,7 +378,7 @@ function Product({
                       selectedTextStyle={styles.selectedTextStyle}
                       iconStyle={styles.iconStyle}
                       itemTextStyle={styles.ddItemTextStyle}
-                      data={subCategories[mainCategory1]}
+                      data={subCategories[values.category_1_main]}
                       value={values.category_1_sub}
                       search={false}
                       maxHeight={300}
@@ -393,7 +388,6 @@ function Product({
                       fontFamily={'Poppins'}
                       onBlur={() => setFieldTouched('category_1_sub')}
                       onChange={item => {
-                        setSubCategory1(item.value);
                         subCategory1Ref.current = item.value;
                         setFieldValue('category_1_sub', item.value);
                       }}
@@ -415,6 +409,7 @@ function Product({
                   iconStyle={styles.iconStyle}
                   itemTextStyle={styles.ddItemTextStyle}
                   data={mainCategory}
+                  value={values.category_2_main}
                   search={false}
                   maxHeight={300}
                   labelField="label"
@@ -422,11 +417,10 @@ function Product({
                   placeholder="Select item"
                   fontFamily={'Poppins'}
                   onChange={item => {
-                    setMainCategory2(item.value);
                     setFieldValue('category_2_main', item.value);
                   }}
                 />
-                {mainCategory2 && (
+                {values.category_2_main && (
                   <>
                     <Text style={styles.label}>Sub Category 2</Text>
                     <Dropdown
@@ -435,7 +429,8 @@ function Product({
                       selectedTextStyle={styles.selectedTextStyle}
                       iconStyle={styles.iconStyle}
                       itemTextStyle={styles.ddItemTextStyle}
-                      data={subCategories[mainCategory2]}
+                      data={subCategories[values.category_2_main]}
+                      value={values.category_2_sub}
                       search={false}
                       maxHeight={300}
                       labelField="label"
@@ -443,7 +438,6 @@ function Product({
                       placeholder="Select item"
                       fontFamily={'Poppins'}
                       onChange={item => {
-                        setSubCategory2(item.value);
                         setFieldValue('category_2_sub', item.value);
                       }}
                     />

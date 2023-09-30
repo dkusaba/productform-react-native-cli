@@ -37,13 +37,6 @@ function Login(): JSX.Element {
   const dispatch = useDispatch();
   const formRef = useRef<any>();
 
-  useEffect(() => {
-    // forcing isValid to false by default
-    if (formRef.current) {
-      formRef.current.validateForm();
-    }
-  }, []);
-
   async function loginHandler(email: string, password: string) {
     const user = await userLogin(email, password);
     if (user) {
@@ -58,18 +51,31 @@ function Login(): JSX.Element {
     }
   }
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (formRef?.current) {
+        formRef.current.setErrors({});
+        formRef.current.setTouched({email: false, password: false});
+      }
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <Formik
           innerRef={formRef}
+          validateOnMount={true}
           initialValues={{
             email: '',
             password: '',
           }}
+          initialErrors={{}}
           validationSchema={LoginSchema}
-          onSubmit={values => {
+          onSubmit={(values, {resetForm}) => {
             loginHandler(values.email, values.password);
+            resetForm();
           }}>
           {({
             values,

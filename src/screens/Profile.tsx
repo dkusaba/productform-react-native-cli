@@ -109,7 +109,7 @@ function Profile(): JSX.Element {
             const clearCredentials = await Keychain.resetGenericPassword();
             if (clearCredentials) {
               dispatch(resetToInitialState);
-              navigation.replace('Login');
+              navigation.navigate('Login');
             }
           }}>
           <View style={styles.logOut}>
@@ -119,7 +119,7 @@ function Profile(): JSX.Element {
         </Pressable>
       ),
     });
-  }, [navigation, user]);
+  });
 
   return (
     <SafeAreaView>

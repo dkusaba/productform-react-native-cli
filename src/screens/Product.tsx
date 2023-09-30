@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -16,7 +17,10 @@ import Toast from 'react-native-toast-message';
 import {Dropdown, MultiSelect} from 'react-native-element-dropdown';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faSquare, faSquareCheck} from '@fortawesome/free-regular-svg-icons';
-import type {ProductScreenNavigationProp} from '../types/navigation';
+import type {
+  ProductScreenNavigationProp,
+  ProductScreenRouteProp,
+} from '../types/navigation';
 import {horizontalScale, verticalScale, scaleFontSize} from '../util/scaling';
 import {Colors} from '../constants/colors';
 import Header from '../components/ui/Header';
@@ -42,10 +46,7 @@ import {productCreate, productUpdate} from '../api/product';
 import {RootState} from '../redux/store';
 import BackButton from '../components/ui/BackButton';
 
-function Product({
-  route,
-  navigation,
-}: ProductScreenNavigationProp): JSX.Element {
+function Product(): JSX.Element {
   const ProductSchema = Yup.object().shape({
     name_en: Yup.string().required('Please enter above field'),
     name_jp: Yup.string().required('Please enter above field'),
@@ -86,13 +87,16 @@ function Product({
     import_experience: Yup.string().required('Please enter above field'),
   });
 
+  const navigation = useNavigation<ProductScreenNavigationProp>();
+  const route = useRoute<ProductScreenRouteProp>();
+
   let product = route.params.product;
   const user = useSelector((state: RootState) => state.user);
   const mainCategory = ProductCategories.mainCategory;
   const subCategories: any = ProductCategories.subCategories;
 
   const mainCategory1Ref = useRef<string>('');
-  const subCategory1Ref = useRef<strong>('');
+  const subCategory1Ref = useRef<string>('');
   const [image1, setImage1] = useState('');
   const [image1FormData, setImage1FormData] = useState('');
   const [image2, setImage2] = useState('');
@@ -102,7 +106,7 @@ function Product({
   const storageTemperatureRef = useRef<string>('');
   const manuLocationRef = useRef<string>('');
   const weightUnitRef = useRef<string>('');
-  const contentWeightUnitRef = useRef<strong>('');
+  const contentWeightUnitRef = useRef<string>('');
   const totalWeightUnitRef = useRef<string>('');
   const leadTimeUnitRef = useRef<string>('');
   const oemPossibilityRef = useRef<string>('');
@@ -127,8 +131,9 @@ function Product({
     );
   };
 
-  if (!product) {
+  if (product === null) {
     product = {
+      id: '',
       name_en: '',
       name_jp: '',
       jan_code: '',
@@ -184,9 +189,18 @@ function Product({
   } else {
     product = {
       ...product,
-      specialty_diets: product.specialty_diets.split(','),
-      manufacturer_certification: product.manufacturer_certification.split(','),
-      product_certification: product.product_certification.split(','),
+      specialty_diets:
+        typeof product.specialty_diets === 'string'
+          ? product.specialty_diets.split(',')
+          : '',
+      manufacturer_certification:
+        typeof product.manufacturer_certification === 'string'
+          ? product.manufacturer_certification.split(',')
+          : '',
+      product_certification:
+        typeof product.product_certification === 'string'
+          ? product.product_certification.split(',')
+          : '',
       usa_importer:
         product.usa_importer === '無'
           ? ''
@@ -325,7 +339,6 @@ function Product({
               setFieldValue,
               handleChange,
               handleSubmit,
-              isValid,
             }) => (
               <>
                 <Header type={1}>PRODUCT DETAILS</Header>

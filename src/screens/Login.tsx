@@ -38,6 +38,7 @@ function Login(): JSX.Element {
   const formRef = useRef<any>();
 
   useEffect(() => {
+    // forcing isValid to false by default
     if (formRef.current) {
       formRef.current.validateForm();
     }

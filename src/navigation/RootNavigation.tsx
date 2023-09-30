@@ -1,14 +1,11 @@
 import React from 'react';
-import {Pressable} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import type {DashboardScreenNavigationProp} from '../types/navigation';
 import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import Dashboard from '../screens/Dashboard';
 import Profile from '../screens/Profile';
 import Product from '../screens/Product';
-import ProfileIcon from '../components/ui/ProfileIcon';
 
 const Stack = createStackNavigator();
 

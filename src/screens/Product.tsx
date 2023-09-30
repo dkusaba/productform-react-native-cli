@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   Image,
   Platform,
@@ -9,14 +9,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import Toast from 'react-native-toast-message';
 import {Dropdown, MultiSelect} from 'react-native-element-dropdown';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faSquare, faSquareCheck} from '@fortawesome/free-regular-svg-icons';
-
 import type {ProductScreenNavigationProp} from '../types/navigation';
 import {horizontalScale, verticalScale, scaleFontSize} from '../util/scaling';
 import {Colors} from '../constants/colors';
@@ -41,6 +40,7 @@ import Button from '../components/ui/Button';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {productCreate, productUpdate} from '../api/product';
 import {RootState} from '../redux/store';
+import BackButton from '../components/ui/BackButton';
 
 function Product({
   route,
@@ -111,7 +111,10 @@ function Product({
   const labelHandlingRef = useRef<string>('');
   const importExpRef = useRef<string>('');
 
-  const checkMultiSelectItem = (item: {label: string}, selected: Boolean) => {
+  const checkMultiSelectItem = (
+    item: {label: string; value: string},
+    selected?: Boolean | undefined,
+  ) => {
     return (
       <View style={styles.item}>
         <Text style={styles.selectedTextStyle}>{item.label}</Text>
@@ -196,10 +199,13 @@ function Product({
     };
   }
 
+  console.log('product', product);
+
   return (
     <SafeAreaView>
       <ScrollView>
         <View style={styles.container}>
+          <BackButton onPress={() => navigation.goBack()} />
           <Formik
             initialValues={product}
             validationSchema={ProductSchema}
@@ -322,7 +328,7 @@ function Product({
               isValid,
             }) => (
               <>
-                <Header type={1}>Product Information</Header>
+                <Header type={1}>PRODUCT DETAILS</Header>
                 <Text style={styles.instructions}>
                   Fields labeled (Japanese) are not forced. You may enter
                   English instead.
@@ -1203,7 +1209,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginHorizontal: horizontalScale(18),
-    marginVertical: verticalScale(24),
+    marginVertical: verticalScale(12),
   },
   companyProfileContainer: {
     marginTop: verticalScale(15),

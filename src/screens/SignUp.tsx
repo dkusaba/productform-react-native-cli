@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Alert,
-  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -22,6 +21,7 @@ import Button from '../components/ui/Button';
 import {Colors} from '../constants/colors';
 import {userLogin, userSignUp} from '../api/user';
 import {logIn} from '../redux/reducers/User';
+import BackButton from '../components/ui/BackButton';
 
 const SignUpSchema = Yup.object().shape({
   first_name_en: Yup.string().required('Please enter your first name'),
@@ -53,9 +53,7 @@ function SignUp(): JSX.Element {
     <SafeAreaView>
       <ScrollView>
         <View style={styles.container}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Header type={3}>Back</Header>
-          </Pressable>
+          <BackButton onPress={() => navigation.goBack()} />
           <Formik
             initialValues={{
               first_name_en: '',

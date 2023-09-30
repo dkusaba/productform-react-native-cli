@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   Pressable,
@@ -10,12 +10,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import * as Keychain from 'react-native-keychain';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import Toast from 'react-native-toast-message';
 import {launchImageLibrary} from 'react-native-image-picker';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faSignOut, faChevronLeft} from '@fortawesome/free-solid-svg-icons';
 
 import type {ProfileScreenNavigationProp} from '../types/navigation';
 import type {RootState} from '../redux/store';
@@ -25,7 +28,7 @@ import {horizontalScale, scaleFontSize, verticalScale} from '../util/scaling';
 import Button from '../components/ui/Button';
 import {Colors} from '../constants/colors';
 import {userEdit} from '../api/user';
-import {updateProfile} from '../redux/reducers/User';
+import {resetToInitialState, updateProfile} from '../redux/reducers/User';
 
 function Profile(): JSX.Element {
   const ProfileSchema = Yup.object().shape({
@@ -88,13 +91,40 @@ function Profile(): JSX.Element {
     }
   }
 
+  useEffect(() => {
+    navigation.setOptions({
+      // eslint-disable-next-line react/no-unstable-nested-components
+      headerLeft: () => (
+        <Pressable onPress={() => navigation.goBack()}>
+          <View style={styles.dbLink}>
+            <FontAwesomeIcon icon={faChevronLeft} size={16} />
+            <Text style={styles.dbLinkText}>Dashboard</Text>
+          </View>
+        </Pressable>
+      ),
+      // eslint-disable-next-line react/no-unstable-nested-components
+      headerRight: () => (
+        <Pressable
+          onPress={async () => {
+            const clearCredentials = await Keychain.resetGenericPassword();
+            if (clearCredentials) {
+              dispatch(resetToInitialState);
+              navigation.replace('Login');
+            }
+          }}>
+          <View style={styles.logOut}>
+            <FontAwesomeIcon icon={faSignOut} size={16} />
+            <Text style={styles.logOutText}>Log Out</Text>
+          </View>
+        </Pressable>
+      ),
+    });
+  }, [navigation, user]);
+
   return (
     <SafeAreaView>
       <ScrollView>
         <View style={styles.container}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Header type={3}>Back</Header>
-          </Pressable>
           <Formik
             initialValues={{
               customer_id: user.data.customer_id,
@@ -380,10 +410,30 @@ function Profile(): JSX.Element {
 export default Profile;
 
 const styles = StyleSheet.create({
+  dbLink: {
+    marginLeft: horizontalScale(15),
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dbLinkText: {
+    fontSize: scaleFontSize(14),
+    marginLeft: horizontalScale(5),
+  },
+  logOut: {
+    marginRight: horizontalScale(15),
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logOutText: {
+    fontSize: scaleFontSize(14),
+    marginLeft: horizontalScale(5),
+  },
   container: {
     flex: 1,
     marginHorizontal: horizontalScale(18),
-    marginVertical: verticalScale(24),
+    marginBottom: verticalScale(24),
   },
   companyProfileContainer: {
     marginTop: verticalScale(15),

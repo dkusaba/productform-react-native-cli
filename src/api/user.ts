@@ -69,10 +69,11 @@ export const userSignUp = async (
 
 export const userEdit = async (data: any, token: string) => {
   try {
-    const response = await ApiConnect('/auth/update?token=' + token, {
+    const response = await ApiConnect('/auth/update', {
       method: 'POST',
       headers: {
         'content-type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
       },
       data: data,
     });

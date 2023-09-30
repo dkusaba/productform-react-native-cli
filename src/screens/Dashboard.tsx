@@ -70,7 +70,7 @@ function Dashboard(): JSX.Element {
     navigation.setOptions({
       // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: () => (
-        <Pressable onPress={() => navigation.navigate('Profile', {user: user})}>
+        <Pressable onPress={() => navigation.navigate('Profile')}>
           <View style={styles.profileIcon}>
             <FontAwesomeIcon icon={faUser} size={16} />
           </View>
@@ -104,7 +104,7 @@ function Dashboard(): JSX.Element {
                 isDisabled={false}
                 fullWidth={false}
                 onPress={() => {
-                  navigation.navigate('Profile', {user: user});
+                  navigation.navigate('Profile');
                 }}
               />
             </>

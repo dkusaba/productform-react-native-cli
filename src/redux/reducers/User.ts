@@ -59,6 +59,7 @@ export const User = createSlice({
       return initialState;
     },
     updateProfile: (state, action) => {
+      console.log('payload', action.payload);
       state.data = action.payload;
     },
     updateToken: (state, action) => {

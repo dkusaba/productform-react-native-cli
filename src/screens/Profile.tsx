@@ -70,6 +70,7 @@ function Profile(): JSX.Element {
   const navigation = useNavigation<ProfileScreenNavigationProp>();
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
+
   const [selectImage, setSelectImage] = useState('');
   const [imageFormData, setImageFormData] = useState({});
 
@@ -189,8 +190,8 @@ function Profile(): JSX.Element {
               formData.append('last_name_jp', values.last_name_jp);
               formData.append('email', values.email);
               formData.append('phone_number', values.phone_number);
+
               let response: any = await userEdit(formData, user.token);
-              console.log('profile response', response);
               if (response && response.status === 200) {
                 dispatch(updateProfile(response.data));
               }

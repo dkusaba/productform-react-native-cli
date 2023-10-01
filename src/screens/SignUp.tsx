@@ -14,14 +14,16 @@ import Toast from 'react-native-toast-message';
 import {useDispatch} from 'react-redux';
 
 import type {SignUpScreenNavigationProp} from '../types/navigation';
+import {horizontalScale, scaleFontSize, verticalScale} from '../util/scaling';
 import Header from '../components/ui/Header';
 import Input from '../components/ui/Input';
-import {horizontalScale, scaleFontSize, verticalScale} from '../util/scaling';
 import Button from '../components/ui/Button';
-import {Colors} from '../constants/colors';
-import {userLogin, userSignUp} from '../api/user';
-import {logIn} from '../redux/reducers/userSlice';
 import BackButton from '../components/ui/BackButton';
+import {Colors} from '../constants/colors';
+import {persistor} from '../redux/store';
+import {userLogin, userSignUp} from '../api/user';
+import {logIn, resetToInitialUserState} from '../redux/reducers/userSlice';
+import {resetToInitialProductState} from '../redux/reducers/productSlice';
 
 const SignUpSchema = Yup.object().shape({
   first_name_en: Yup.string().required('Please enter your first name'),
@@ -87,6 +89,9 @@ function SignUp(): JSX.Element {
               if (response && response.status === 200) {
                 const user = await userLogin(values.email, values.password);
                 if (user) {
+                  dispatch(resetToInitialUserState);
+                  dispatch(resetToInitialProductState);
+                  persistor.purge();
                   dispatch(logIn(user));
                   navigation.replace('Dashboard');
                 }

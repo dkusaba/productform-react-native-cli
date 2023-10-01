@@ -27,7 +27,12 @@ import {horizontalScale, scaleFontSize, verticalScale} from '../util/scaling';
 import Button from '../components/ui/Button';
 import {Colors} from '../constants/colors';
 import {userEdit} from '../api/user';
-import {resetToInitialState, updateProfile} from '../redux/reducers/userSlice';
+import {persistor} from '../redux/store';
+import {
+  resetToInitialUserState,
+  updateProfile,
+} from '../redux/reducers/userSlice';
+import {resetToInitialProductState} from '../redux/reducers/productSlice';
 
 function Profile(): JSX.Element {
   const ProfileSchema = Yup.object().shape({
@@ -106,7 +111,9 @@ function Profile(): JSX.Element {
       headerRight: () => (
         <Pressable
           onPress={async () => {
-            dispatch(resetToInitialState);
+            dispatch(resetToInitialUserState);
+            dispatch(resetToInitialProductState);
+            persistor.purge();
             navigation.navigate('Login');
           }}>
           <View style={styles.logOut}>

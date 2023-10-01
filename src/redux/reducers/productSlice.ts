@@ -69,7 +69,6 @@ export const productSlice = createSlice({
   reducers: {
     addProduct: (state, action) => {
       state.items = [...state.items, action.payload];
-      console.log('updated state', state);
     },
     updateProduct: (state, action) => {
       state.items.map((item, i) => {
@@ -81,9 +80,16 @@ export const productSlice = createSlice({
     setInitialProducts: (state, action) => {
       state.items = action.payload;
     },
+    resetToInitialProductState: () => {
+      return initialState;
+    },
   },
 });
 
-export const {addProduct, updateProduct, setInitialProducts} =
-  productSlice.actions;
+export const {
+  addProduct,
+  updateProduct,
+  setInitialProducts,
+  resetToInitialProductState,
+} = productSlice.actions;
 export default productSlice.reducer;

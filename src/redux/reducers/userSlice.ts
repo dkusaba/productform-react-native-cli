@@ -55,7 +55,7 @@ export const userSlice = createSlice({
     logIn: (state, action) => {
       return {...state, ...action.payload};
     },
-    resetToInitialState: () => {
+    resetToInitialUserState: () => {
       return initialState;
     },
     updateProfile: (state, action) => {
@@ -67,6 +67,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const {logIn, resetToInitialState, updateProfile, updateToken} =
+export const {logIn, resetToInitialUserState, updateProfile, updateToken} =
   userSlice.actions;
 export default userSlice.reducer;

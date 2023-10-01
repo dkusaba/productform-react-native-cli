@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "practice.app"
-               BlueprintName = "practice"
-               ReferencedContainer = "container:practice.xcodeproj">
+               BuildableName = "ProductForm.app"
+               BlueprintName = "ProductForm"
+               ReferencedContainer = "container:ProductForm.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "practiceTests.xctest"
-               BlueprintName = "practiceTests"
-               ReferencedContainer = "container:practice.xcodeproj">
+               BuildableName = "ProductFormTests.xctest"
+               BlueprintName = "ProductFormTests"
+               ReferencedContainer = "container:ProductForm.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "practice.app"
-            BlueprintName = "practice"
-            ReferencedContainer = "container:practice.xcodeproj">
+            BuildableName = "ProductForm.app"
+            BlueprintName = "ProductForm"
+            ReferencedContainer = "container:ProductForm.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "practice.app"
-            BlueprintName = "practice"
-            ReferencedContainer = "container:practice.xcodeproj">
+            BuildableName = "ProductForm.app"
+            BlueprintName = "ProductForm"
+            ReferencedContainer = "container:ProductForm.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.gray600,
   },
   product: {
-    marginTop: verticalScale(10),
+    marginTop: verticalScale(5),
     padding: horizontalScale(10),
     flexDirection: 'row',
     alignItems: 'center',

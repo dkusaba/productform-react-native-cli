@@ -341,7 +341,7 @@ function Product(): JSX.Element {
               } else {
                 response = await productCreate(user.token, formData);
                 if (response) {
-                  dispatch(addProduct(response));
+                  dispatch(addProduct(response.product));
                   Toast.show({
                     type: 'success',
                     text1: 'Product created successfully',
@@ -361,7 +361,6 @@ function Product(): JSX.Element {
               setFieldTouched,
               setFieldValue,
               handleChange,
-              validateForm,
               handleSubmit,
             }) => (
               <>

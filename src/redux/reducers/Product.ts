@@ -69,6 +69,7 @@ export const Product = createSlice({
   reducers: {
     addProduct: (state, action) => {
       state.items = [...state.items, action.payload];
+      console.log('updated state', state);
     },
     updateProduct: (state, action) => {
       state.items.map((item, i) => {

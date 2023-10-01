@@ -125,7 +125,7 @@ export const ShelfLifeUnit = [
 
 export const StorageTemperature = [
   {label: 'Room Temperature', value: 'Room Temperature'},
-  {label: 'Cool', value: 'Cool'},
+  {label: 'Cold', value: 'Cold'},
   {label: 'Frozen', value: 'Frozen'},
 ];
 

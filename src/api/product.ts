@@ -16,7 +16,8 @@ export const productGet = async (token: string) => {
       return {error: 'An unknown error occurred.'};
     }
   } catch (error) {
-    console.log(error);
+    const err = error as AxiosError;
+    console.log(err.response?.data);
   }
 };
 
@@ -43,7 +44,7 @@ export const productCreate = async (token: string, data: FormData) => {
 
 export const productUpdate = async (
   token: string,
-  id: number,
+  id: number | string,
   data: FormData,
 ) => {
   try {
@@ -61,6 +62,7 @@ export const productUpdate = async (
       return {error: 'An unknown error occurred.'};
     }
   } catch (error) {
-    console.log(error);
+    const err = error as AxiosError;
+    console.log(err.response?.data);
   }
 };

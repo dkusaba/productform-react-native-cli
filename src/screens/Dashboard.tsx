@@ -27,45 +27,6 @@ function Dashboard(): JSX.Element {
   const user = useSelector((state: RootState) => state.user);
   const products = useSelector((state: RootState) => state.product);
 
-  const ProductList = () => {
-    if (products && products.items.length) {
-      return products.items.map(item => (
-        <View key={item.id}>
-          <TouchableOpacity
-            style={styles.product}
-            onPress={() => {
-              navigation.navigate('Product', {
-                product: item,
-              });
-            }}>
-            <View style={styles.imageContainer}>
-              <Image
-                style={styles.image}
-                resizeMode="cover"
-                source={{
-                  uri: `http://127.0.0.1:8000/images/products/${item.image_path_1}`,
-                }}
-              />
-            </View>
-            <View style={styles.nameContainer}>
-              <Text numberOfLines={1} style={styles.name}>
-                {item.name_en}
-              </Text>
-            </View>
-            <View style={styles.iconContainer}>
-              <FontAwesomeIcon
-                icon={faEdit}
-                size={20}
-                color={Colors.grayPrimary}
-              />
-              <Text style={styles.iconText}>EDIT</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      ));
-    }
-  };
-
   useEffect(() => {
     navigation.setOptions({
       // eslint-disable-next-line react/no-unstable-nested-components
@@ -77,7 +38,7 @@ function Dashboard(): JSX.Element {
         </Pressable>
       ),
     });
-  }, [navigation, user]);
+  }, [navigation]);
 
   return (
     <SafeAreaView>
@@ -162,7 +123,42 @@ function Dashboard(): JSX.Element {
               <Header type={2}>REGISTERED PRODUCTS</Header>
             </View>
           ) : null}
-          <ProductList />
+          {products.items.length
+            ? products.items.map(item => (
+                <View key={item.id}>
+                  <TouchableOpacity
+                    style={styles.product}
+                    onPress={() => {
+                      navigation.navigate('Product', {
+                        product: item,
+                      });
+                    }}>
+                    <View style={styles.imageContainer}>
+                      <Image
+                        style={styles.image}
+                        resizeMode="cover"
+                        source={{
+                          uri: `http://127.0.0.1:8000/images/products/${item.image_path_1}`,
+                        }}
+                      />
+                    </View>
+                    <View style={styles.nameContainer}>
+                      <Text numberOfLines={1} style={styles.name}>
+                        {item.name_en}
+                      </Text>
+                    </View>
+                    <View style={styles.iconContainer}>
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        size={20}
+                        color={Colors.grayPrimary}
+                      />
+                      <Text style={styles.iconText}>EDIT</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              ))
+            : null}
         </View>
       </ScrollView>
     </SafeAreaView>

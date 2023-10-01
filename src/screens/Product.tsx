@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import Toast from 'react-native-toast-message';
@@ -45,6 +45,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {productCreate, productUpdate} from '../api/product';
 import {RootState} from '../redux/store';
 import BackButton from '../components/ui/BackButton';
+import {addProduct, updateProduct} from '../redux/reducers/Product';
 
 function Product(): JSX.Element {
   const ProductSchema = Yup.object().shape({
@@ -54,7 +55,6 @@ function Product(): JSX.Element {
     category_1_sub: Yup.string().required('Please enter above field'),
     intro_en: Yup.string().required('Please enter above field'),
     intro_jp: Yup.string().required('Please enter above field'),
-    youtube_url: Yup.string().required('Please enter above field'),
     sale_for: Yup.string().required('Please enter above field'),
     ingredients_en: Yup.string().required('Please enter above field'),
     ingredients_jp: Yup.string().required('Please enter above field'),
@@ -89,12 +89,12 @@ function Product(): JSX.Element {
 
   const navigation = useNavigation<ProductScreenNavigationProp>();
   const route = useRoute<ProductScreenRouteProp>();
+  const dispatch = useDispatch();
 
   let product = route.params.product;
   const user = useSelector((state: RootState) => state.user);
   const mainCategory = ProductCategories.mainCategory;
   const subCategories: any = ProductCategories.subCategories;
-
   const mainCategory1Ref = useRef<string>('');
   const subCategory1Ref = useRef<string>('');
   const [image1, setImage1] = useState('');
@@ -213,8 +213,6 @@ function Product(): JSX.Element {
     };
   }
 
-  console.log('product', product);
-
   return (
     <SafeAreaView>
       <ScrollView>
@@ -222,9 +220,9 @@ function Product(): JSX.Element {
           <BackButton onPress={() => navigation.goBack()} />
           <Formik
             initialValues={product}
+            validateOnMount={true}
             validationSchema={ProductSchema}
             onSubmit={async values => {
-              console.log('submitted values', values);
               let formData = new FormData();
               if (Object.keys(image1FormData).length > 0) {
                 formData.append('image', image1FormData);
@@ -238,7 +236,7 @@ function Product(): JSX.Element {
               }
               formData.append('name_en', values.name_en);
               formData.append('name_jp', values.name_jp);
-              formData.append('jan_code', values.jan_code);
+              formData.append('jan_code', '');
               formData.append('category_1_main', values.category_1_main);
               formData.append('category_1_sub', values.category_1_sub);
               formData.append('category_2_main', values.category_2_main);
@@ -247,7 +245,9 @@ function Product(): JSX.Element {
               formData.append('intro_jp', values.intro_jp);
               formData.append('youtube_url', values.youtube_url);
               formData.append('sale_for', values.sale_for);
-              const specialtyDietsStr = values.specialty_diets.join(',');
+              const specialtyDietsStr = Array.isArray(values.specialty_diets)
+                ? values.specialty_diets.join(',')
+                : '';
               formData.append('specialty_diets', specialtyDietsStr);
               formData.append('ingredients_en', values.ingredients_en);
               formData.append('ingredients_jp', values.ingredients_jp);
@@ -274,7 +274,7 @@ function Product(): JSX.Element {
               formData.append('net_weight_unit', values.net_weight_unit);
               formData.append('weight', +values.weight);
               formData.append('weight_unit', values.weight_unit);
-              formData.append('item_price', values.item_price);
+              formData.append('item_price', values.item_price.toString());
               formData.append('case_width', +values.case_width);
               formData.append('case_depth', +values.case_depth);
               formData.append('case_height', +values.case_height);
@@ -288,9 +288,15 @@ function Product(): JSX.Element {
                 +values.minimum_order_quantity,
               );
               formData.append('oem_possibility', values.oem_possibility);
-              const manuCertStr = values.manufacturer_certification.join(',');
+              const manuCertStr = Array.isArray(
+                values.manufacturer_certification,
+              )
+                ? values.manufacturer_certification.join(',')
+                : '';
               formData.append('manufacturer_certification', manuCertStr);
-              const productCertStr = values.product_certification.join(',');
+              const productCertStr = Array.isArray(values.product_certification)
+                ? values.product_certification.join(',')
+                : '';
               formData.append('product_certification', productCertStr);
               if (values.usa_importer === '') {
                 formData.append('usa_importer', '無');
@@ -315,20 +321,37 @@ function Product(): JSX.Element {
               formData.append('label_handling', values.label_handling);
               formData.append('import_experience', values.import_experience);
 
-              console.log('formData', formData);
               let response;
-              if (product.id) {
-                response = await productUpdate(
-                  user.token,
-                  product.id,
-                  formData,
-                );
+
+              if (values.id) {
+                formData.append('_method', 'PATCH');
+                response = await productUpdate(user.token, values.id, formData);
+                if (response) {
+                  dispatch(updateProduct(response));
+                  Toast.show({
+                    type: 'success',
+                    text1: 'Product updated successfully',
+                    visibilityTime: 3000,
+                    position: 'bottom',
+                  });
+                  setTimeout(() => {
+                    navigation.navigate('Dashboard');
+                  }, 500);
+                }
               } else {
                 response = await productCreate(user.token, formData);
-              }
-
-              if (response) {
-                console.log(response);
+                if (response) {
+                  dispatch(addProduct(response));
+                  Toast.show({
+                    type: 'success',
+                    text1: 'Product created successfully',
+                    visibilityTime: 3000,
+                    position: 'bottom',
+                  });
+                  setTimeout(() => {
+                    navigation.navigate('Dashboard');
+                  }, 500);
+                }
               }
             }}>
             {({
@@ -338,6 +361,7 @@ function Product(): JSX.Element {
               setFieldTouched,
               setFieldValue,
               handleChange,
+              validateForm,
               handleSubmit,
             }) => (
               <>
@@ -370,9 +394,6 @@ function Product(): JSX.Element {
                   onBlur={() => setFieldTouched('jan_code')}
                   onChangeText={handleChange('jan_code')}
                 />
-                {touched.jan_code && errors.jan_code && (
-                  <Text style={styles.errorText}>{errors.jan_code}</Text>
-                )}
                 <Text style={styles.label}>Main Category 1</Text>
                 <Dropdown
                   style={styles.dropdown}
@@ -567,9 +588,6 @@ function Product(): JSX.Element {
                   onBlur={() => setFieldTouched('youtube_url')}
                   onChangeText={handleChange('youtube_url')}
                 />
-                {touched.youtube_url && errors.youtube_url && (
-                  <Text style={styles.errorText}>{errors.youtube_url}</Text>
-                )}
                 <Text style={styles.label}>Sale Target</Text>
                 <Dropdown
                   style={styles.dropdown}
@@ -610,10 +628,7 @@ function Product(): JSX.Element {
                   placeholder="Select items"
                   selectedStyle={styles.selectedStyle}
                   onBlur={() => setFieldTouched('specialty_diets')}
-                  onChange={item => {
-                    console.log(item);
-                    setFieldValue('specialty_diets', item);
-                  }}
+                  onChange={item => setFieldValue('specialty_diets', item)}
                   renderItem={checkMultiSelectItem}
                 />
                 <Input
@@ -1203,7 +1218,11 @@ function Product(): JSX.Element {
                   )}
                 <Button
                   isDisabled={false}
-                  title={product.id ? 'UPDATE PRODUCT' : 'REGISTER PRODUCT'}
+                  title={
+                    product && product.id
+                      ? 'UPDATE PRODUCT'
+                      : 'REGISTER PRODUCT'
+                  }
                   onPress={handleSubmit}
                 />
               </>

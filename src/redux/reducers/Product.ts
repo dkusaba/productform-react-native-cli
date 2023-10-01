@@ -68,17 +68,16 @@ export const Product = createSlice({
   initialState: initialState,
   reducers: {
     addProduct: (state, action) => {
-      state.items.push(action.payload);
+      state.items = [...state.items, action.payload];
     },
     updateProduct: (state, action) => {
-      state.items.map(item => {
+      state.items.map((item, i) => {
         if (item.id === action.payload.id) {
-          item = action.payload;
+          state.items[i] = action.payload;
         }
       });
     },
     setInitialProducts: (state, action) => {
-      console.log(action.payload);
       state.items = action.payload;
     },
   },

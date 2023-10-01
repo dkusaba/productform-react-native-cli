@@ -16,7 +16,6 @@ export const userLogin = async (email: string, password: string) => {
       },
     });
     if (response && response.status === 200) {
-      console.log('user', response.data.user);
       await Keychain.setGenericPassword(email, password);
       return {
         isLoggedIn: true,
@@ -27,7 +26,8 @@ export const userLogin = async (email: string, password: string) => {
       return {error: 'An unknown error occurred.'};
     }
   } catch (error) {
-    console.log(error);
+    const err = error as AxiosError;
+    console.log(err.response?.data);
   }
 };
 

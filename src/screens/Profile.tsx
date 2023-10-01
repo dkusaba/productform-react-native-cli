@@ -148,7 +148,6 @@ function Profile(): JSX.Element {
             }}
             validationSchema={ProfileSchema}
             onSubmit={async values => {
-              console.log('values', values);
               if (values.co_logo_path === '' || imageFormData === '') {
                 Toast.show({
                   type: 'error',
@@ -203,7 +202,7 @@ function Profile(): JSX.Element {
               });
               setTimeout(() => {
                 navigation.navigate('Dashboard');
-              }, 1000);
+              }, 500);
             }}>
             {({
               values,

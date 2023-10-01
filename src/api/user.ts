@@ -1,4 +1,3 @@
-import * as Keychain from 'react-native-keychain';
 import {AxiosError} from 'axios';
 
 import {ApiConnect} from './api';
@@ -16,7 +15,6 @@ export const userLogin = async (email: string, password: string) => {
       },
     });
     if (response && response.status === 200) {
-      await Keychain.setGenericPassword(email, password);
       return {
         isLoggedIn: true,
         token: response.data.token,

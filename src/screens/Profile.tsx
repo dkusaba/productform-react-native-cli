@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import * as Keychain from 'react-native-keychain';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
@@ -107,11 +106,8 @@ function Profile(): JSX.Element {
       headerRight: () => (
         <Pressable
           onPress={async () => {
-            const clearCredentials = await Keychain.resetGenericPassword();
-            if (clearCredentials) {
-              dispatch(resetToInitialState);
-              navigation.navigate('Login');
-            }
+            dispatch(resetToInitialState);
+            navigation.navigate('Login');
           }}>
           <View style={styles.logOut}>
             <FontAwesomeIcon icon={faSignOut} size={16} />

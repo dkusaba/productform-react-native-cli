@@ -1,6 +1,8 @@
 import React from 'react';
+import {useSelector} from 'react-redux';
 import {createStackNavigator} from '@react-navigation/stack';
 
+import type {RootState} from '../redux/store';
 import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import Dashboard from '../screens/Dashboard';
@@ -10,9 +12,16 @@ import Product from '../screens/Product';
 const Stack = createStackNavigator();
 
 function RootNavigation(): JSX.Element {
+  const user = useSelector((state: RootState) => state.user);
+  let initialRoute = 'Login';
+
+  if (user.isLoggedIn) {
+    initialRoute = 'Dashboard';
+  }
+
   return (
     <Stack.Navigator
-      initialRouteName="Login"
+      initialRouteName={initialRoute}
       screenOptions={{headerShown: false}}>
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="SignUp" component={SignUp} />

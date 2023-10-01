@@ -48,7 +48,7 @@ const initialState: UserState = {
   },
 };
 
-export const User = createSlice({
+export const userSlice = createSlice({
   name: 'user',
   initialState: initialState,
   reducers: {
@@ -68,5 +68,5 @@ export const User = createSlice({
 });
 
 export const {logIn, resetToInitialState, updateProfile, updateToken} =
-  User.actions;
-export default User.reducer;
+  userSlice.actions;
+export default userSlice.reducer;

@@ -20,7 +20,7 @@ import {horizontalScale, scaleFontSize, verticalScale} from '../util/scaling';
 import Button from '../components/ui/Button';
 import {Colors} from '../constants/colors';
 import {userLogin, userSignUp} from '../api/user';
-import {logIn} from '../redux/reducers/User';
+import {logIn} from '../redux/reducers/userSlice';
 import BackButton from '../components/ui/BackButton';
 
 const SignUpSchema = Yup.object().shape({

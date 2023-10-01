@@ -28,7 +28,7 @@ import {horizontalScale, scaleFontSize, verticalScale} from '../util/scaling';
 import Button from '../components/ui/Button';
 import {Colors} from '../constants/colors';
 import {userEdit} from '../api/user';
-import {resetToInitialState, updateProfile} from '../redux/reducers/User';
+import {resetToInitialState, updateProfile} from '../redux/reducers/userSlice';
 
 function Profile(): JSX.Element {
   const ProfileSchema = Yup.object().shape({

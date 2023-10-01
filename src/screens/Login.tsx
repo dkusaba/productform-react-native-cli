@@ -19,9 +19,9 @@ import {horizontalScale, verticalScale} from '../util/scaling';
 import Button from '../components/ui/Button';
 import {Colors} from '../constants/colors';
 import {userLogin} from '../api/user';
-import {logIn} from '../redux/reducers/User';
+import {logIn} from '../redux/reducers/userSlice';
 import {productGet} from '../api/product';
-import {setInitialProducts} from '../redux/reducers/Product';
+import {setInitialProducts} from '../redux/reducers/productSlice';
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string()

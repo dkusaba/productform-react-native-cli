@@ -45,7 +45,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {productCreate, productUpdate} from '../api/product';
 import {RootState} from '../redux/store';
 import BackButton from '../components/ui/BackButton';
-import {addProduct, updateProduct} from '../redux/reducers/Product';
+import {addProduct, updateProduct} from '../redux/reducers/productSlice';
 
 function Product(): JSX.Element {
   const ProductSchema = Yup.object().shape({

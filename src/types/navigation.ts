@@ -1,7 +1,7 @@
 import {StackNavigationProp} from '@react-navigation/stack';
 import type {RouteProp} from '@react-navigation/native';
 
-import type {Product} from '../redux/reducers/Product';
+import type {Product} from '../redux/reducers/productSlice';
 
 export type AppStackNavigatorParamList = {
   Login: undefined;

@@ -15,6 +15,7 @@ export const userLogin = async (email: string, password: string) => {
       },
     });
     if (response && response.status === 200) {
+      console.log(response);
       return {
         isLoggedIn: true,
         token: response.data.token,

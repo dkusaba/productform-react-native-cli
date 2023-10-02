@@ -81,7 +81,6 @@ function Product(): JSX.Element {
     lead_time: Yup.string().required('Please enter above field'),
     lead_time_unit: Yup.string().required('Please enter above field'),
     minimum_order_quantity: Yup.string().required('Please enter above field'),
-    oem_possibility: Yup.string().required('Please enter above field'),
     cooked: Yup.string().required('Please select above field'),
     label_handling: Yup.string().required('Please enter above field'),
     import_experience: Yup.string().required('Please enter above field'),
@@ -325,8 +324,10 @@ function Product(): JSX.Element {
 
               if (values.id) {
                 formData.append('_method', 'PATCH');
+
                 response = await productUpdate(user.token, values.id, formData);
                 if (response) {
+                  console.log('response', response);
                   dispatch(updateProduct(response));
                   Toast.show({
                     type: 'success',
@@ -544,7 +545,7 @@ function Product(): JSX.Element {
                   <Image
                     style={styles.image}
                     source={{
-                      uri: `http://127.0.0.1:8000/images/products/${values.image_path_1}`,
+                      uri: `https://pf.8dotz.com/images/products/${values.image_path_1}`,
                     }}
                   />
                 ) : null}
@@ -577,7 +578,7 @@ function Product(): JSX.Element {
                   <Image
                     style={styles.image}
                     source={{
-                      uri: `http://127.0.0.1:8000/images/products/${values.image_path_2}`,
+                      uri: `https://pf.8dotz.com/images/products/${values.image_path_2}`,
                     }}
                   />
                 ) : null}

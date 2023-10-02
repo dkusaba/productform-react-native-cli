@@ -3,11 +3,10 @@ import {ApiConnect} from './api';
 
 export const productGet = async (token: string) => {
   try {
-    const response = await ApiConnect('/products/', {
+    const response = await ApiConnect(`/products/?token=${token}`, {
       method: 'GET',
       headers: {
         'content-type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
     });
     if (response) {
@@ -23,7 +22,7 @@ export const productGet = async (token: string) => {
 
 export const productCreate = async (token: string, data: FormData) => {
   try {
-    const response = await ApiConnect('/products/', {
+    const response = await ApiConnect('/products', {
       method: 'POST',
       headers: {
         'content-type': 'multipart/form-data',

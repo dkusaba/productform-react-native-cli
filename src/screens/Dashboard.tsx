@@ -138,7 +138,7 @@ function Dashboard(): JSX.Element {
                         style={styles.image}
                         resizeMode="cover"
                         source={{
-                          uri: `http://127.0.0.1:8000/images/products/${item.image_path_1}`,
+                          uri: `https://pf.8dotz.com/images/products/${item.image_path_1}`,
                         }}
                       />
                     </View>

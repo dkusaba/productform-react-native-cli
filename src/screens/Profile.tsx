@@ -274,7 +274,7 @@ function Profile(): JSX.Element {
                     <Image
                       style={styles.image}
                       source={{
-                        uri: `http://127.0.0.1:8000/images/company-logo/${values.co_logo_path}`,
+                        uri: `https://pf.8dotz.com/images/company-logo/${values.co_logo_path}`,
                       }}
                     />
                   ) : null}

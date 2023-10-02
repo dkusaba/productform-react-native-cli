@@ -38,11 +38,14 @@ function Login(): JSX.Element {
   const formRef = useRef<any>();
 
   async function loginHandler(email: string, password: string) {
+    console.log('email', email);
+    console.log('password', password);
     const user = await userLogin(email, password);
     if (user) {
       dispatch(logIn(user));
       const products = await productGet(user.token);
       if (products) {
+        console.log('initial products', products);
         dispatch(setInitialProducts(products));
       }
       navigation.navigate('Dashboard');

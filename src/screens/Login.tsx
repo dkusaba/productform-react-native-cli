@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Pressable,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  View,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {Formik} from 'formik';
@@ -22,6 +23,7 @@ import {userLogin} from '../api/user';
 import {logIn} from '../redux/reducers/userSlice';
 import {productGet} from '../api/product';
 import {setInitialProducts} from '../redux/reducers/productSlice';
+import LoadingOverlay from '../components/ui/LoadingOverlay';
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string()
@@ -37,9 +39,10 @@ function Login(): JSX.Element {
   const dispatch = useDispatch();
   const formRef = useRef<any>();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   async function loginHandler(email: string, password: string) {
-    console.log('email', email);
-    console.log('password', password);
+    setIsLoading(true);
     const user = await userLogin(email, password);
     if (user) {
       dispatch(logIn(user));
@@ -47,6 +50,7 @@ function Login(): JSX.Element {
       if (products) {
         console.log('initial products', products);
         dispatch(setInitialProducts(products));
+        setIsLoading(false);
       }
       navigation.navigate('Dashboard');
     } else {
@@ -65,81 +69,87 @@ function Login(): JSX.Element {
   }, [navigation]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <Formik
-          innerRef={formRef}
-          validateOnMount={true}
-          initialValues={{
-            email: '',
-            password: '',
-          }}
-          initialErrors={{}}
-          validationSchema={LoginSchema}
-          onSubmit={(values, {resetForm}) => {
-            loginHandler(values.email, values.password);
-            resetForm();
-          }}>
-          {({
-            values,
-            touched,
-            errors,
-            setFieldTouched,
-            handleChange,
-            handleSubmit,
-            isValid,
-          }) => (
-            <>
-              <Header type={1} center={true}>
-                LOGIN
-              </Header>
-              <Input
-                value={values.email}
-                keyboardType={'email-address'}
-                label={'Email'}
-                placeholder={'Enter your email'}
-                onBlur={() => setFieldTouched('email')}
-                onChangeText={handleChange('email')}
-              />
-              {touched.email && errors.email && (
-                <Text style={styles.errorText}>{errors.email}</Text>
-              )}
-              <Input
-                value={values.password}
-                label={'Password'}
-                placeholder={'******'}
-                secureTextEntry={true}
-                onBlur={() => setFieldTouched('password')}
-                onChangeText={handleChange('password')}
-              />
-              {touched.password && errors.password && (
-                <Text style={styles.errorText}>{errors.password}</Text>
-              )}
-              <Button
-                isDisabled={!isValid}
-                title={'Login'}
-                onPress={handleSubmit}
-              />
-              <Pressable
-                style={styles.register}
-                onPress={() => navigation.navigate('SignUp')}>
-                <Header color={Colors.bluePrimary} type={3} center={true}>
-                  Don't have an account? Sign Up.
+    <View>
+      {isLoading && <LoadingOverlay />}
+      <SafeAreaView>
+        <ScrollView style={styles.container}>
+          <Formik
+            innerRef={formRef}
+            validateOnMount={true}
+            initialValues={{
+              email: '',
+              password: '',
+            }}
+            initialErrors={{}}
+            validationSchema={LoginSchema}
+            onSubmit={(values, {resetForm}) => {
+              loginHandler(values.email, values.password);
+              resetForm();
+            }}>
+            {({
+              values,
+              touched,
+              errors,
+              setFieldTouched,
+              handleChange,
+              handleSubmit,
+              isValid,
+            }) => (
+              <>
+                <Header type={1} center={true}>
+                  LOGIN
                 </Header>
-              </Pressable>
-            </>
-          )}
-        </Formik>
-      </ScrollView>
-    </SafeAreaView>
+                <Input
+                  value={values.email}
+                  keyboardType={'email-address'}
+                  label={'Email'}
+                  placeholder={'Enter your email'}
+                  onBlur={() => setFieldTouched('email')}
+                  onChangeText={handleChange('email')}
+                />
+                {touched.email && errors.email && (
+                  <Text style={styles.errorText}>{errors.email}</Text>
+                )}
+                <Input
+                  value={values.password}
+                  label={'Password'}
+                  placeholder={'******'}
+                  secureTextEntry={true}
+                  onBlur={() => setFieldTouched('password')}
+                  onChangeText={handleChange('password')}
+                />
+                {touched.password && errors.password && (
+                  <Text style={styles.errorText}>{errors.password}</Text>
+                )}
+                <Button
+                  isDisabled={!isValid}
+                  title={'Login'}
+                  onPress={handleSubmit}
+                />
+                <Pressable
+                  style={styles.register}
+                  onPress={() => navigation.navigate('SignUp')}>
+                  <Header color={Colors.bluePrimary} type={3} center={true}>
+                    Don't have an account? Sign Up.
+                  </Header>
+                </Pressable>
+              </>
+            )}
+          </Formik>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 export default Login;
 
 const styles = StyleSheet.create({
-  container: {
+  superContainer: {
     flex: 1,
+    backgroundColor: '#000000',
+  },
+  container: {
     marginHorizontal: horizontalScale(18),
     marginVertical: verticalScale(24),
   },

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Alert,
   SafeAreaView,
@@ -15,6 +15,7 @@ import {useDispatch} from 'react-redux';
 
 import type {SignUpScreenNavigationProp} from '../types/navigation';
 import {horizontalScale, scaleFontSize, verticalScale} from '../util/scaling';
+import LoadingOverlay from '../components/ui/LoadingOverlay';
 import Header from '../components/ui/Header';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
@@ -50,153 +51,159 @@ const SignUpSchema = Yup.object().shape({
 function SignUp(): JSX.Element {
   const navigation = useNavigation<SignUpScreenNavigationProp>();
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <SafeAreaView>
-      <ScrollView>
-        <View style={styles.container}>
-          <BackButton onPress={() => navigation.goBack()} />
-          <Formik
-            initialValues={{
-              first_name_en: '',
-              last_name_en: '',
-              first_name_jp: '',
-              last_name_jp: '',
-              email: '',
-              phone_number: '',
-              password: '',
-              confirm_password: '',
-            }}
-            validationSchema={SignUpSchema}
-            onSubmit={async values => {
-              Toast.show({
-                type: 'success',
-                text1: 'You have successfully signed up!',
-                text2: 'Now logging you in...',
-                visibilityTime: 3000,
-                position: 'bottom',
-              });
-              const response = await userSignUp(
-                values.first_name_en,
-                values.last_name_en,
-                values.first_name_jp,
-                values.last_name_jp,
-                values.email,
-                values.phone_number,
-                values.password,
-              );
+    <View>
+      {isLoading && <LoadingOverlay />}
+      <SafeAreaView>
+        <ScrollView>
+          <View style={styles.container}>
+            <BackButton onPress={() => navigation.goBack()} />
+            <Formik
+              initialValues={{
+                first_name_en: '',
+                last_name_en: '',
+                first_name_jp: '',
+                last_name_jp: '',
+                email: '',
+                phone_number: '',
+                password: '',
+                confirm_password: '',
+              }}
+              validationSchema={SignUpSchema}
+              onSubmit={async values => {
+                setIsLoading(true);
+                const response = await userSignUp(
+                  values.first_name_en,
+                  values.last_name_en,
+                  values.first_name_jp,
+                  values.last_name_jp,
+                  values.email,
+                  values.phone_number,
+                  values.password,
+                );
 
-              if (response && response.status === 200) {
-                const user = await userLogin(values.email, values.password);
-                if (user) {
-                  dispatch(resetToInitialUserState);
-                  dispatch(resetToInitialProductState);
-                  persistor.purge();
-                  dispatch(logIn(user));
-                  navigation.replace('Dashboard');
+                if (response && response.status === 200) {
+                  Toast.show({
+                    type: 'success',
+                    text1: 'You have successfully signed up!',
+                    text2: 'Now logging you in...',
+                    visibilityTime: 3000,
+                    position: 'bottom',
+                  });
+                  const user = await userLogin(values.email, values.password);
+                  if (user) {
+                    dispatch(resetToInitialUserState);
+                    dispatch(resetToInitialProductState);
+                    persistor.purge();
+                    dispatch(logIn(user));
+                    setIsLoading(false);
+                    navigation.replace('Dashboard');
+                  }
+                } else {
+                  Alert.alert('Something went wrong');
                 }
-              } else {
-                Alert.alert('Something went wrong');
-              }
-            }}>
-            {({
-              touched,
-              errors,
-              setFieldTouched,
-              handleChange,
-              handleSubmit,
-              isValid,
-            }) => (
-              <>
-                <Header type={1} center={true}>
-                  SIGN UP
-                </Header>
-                <Text style={styles.instructions}>
-                  Fields labeled (Japanese) are not forced. You may enter
-                  English instead.
-                </Text>
-                <Input
-                  label={'First Name'}
-                  onBlur={() => setFieldTouched('first_name_en')}
-                  onChangeText={handleChange('first_name_en')}
-                />
-                {touched.first_name_en && errors.first_name_en && (
-                  <Text style={styles.errorText}>{errors.first_name_en}</Text>
-                )}
-                <Input
-                  label={'Last Name'}
-                  onBlur={() => setFieldTouched('last_name_en')}
-                  onChangeText={handleChange('last_name_en')}
-                />
-                {touched.last_name_en && errors.last_name_en && (
-                  <Text style={styles.errorText}>{errors.last_name_en}</Text>
-                )}
-                <Input
-                  label={'First Name (Japanese)'}
-                  onBlur={() => setFieldTouched('first_name_jp')}
-                  onChangeText={handleChange('first_name_jp')}
-                />
-                {touched.first_name_jp && errors.first_name_jp && (
-                  <Text style={styles.errorText}>{errors.first_name_jp}</Text>
-                )}
-                <Input
-                  label={'Last Name (Japanese)'}
-                  onBlur={() => setFieldTouched('last_name_jp')}
-                  onChangeText={handleChange('last_name_jp')}
-                />
-                {touched.last_name_jp && errors.last_name_jp && (
-                  <Text style={styles.errorText}>{errors.last_name_jp}</Text>
-                )}
-                <Input
-                  keyboardType={'email-address'}
-                  label={'Email'}
-                  onBlur={() => setFieldTouched('email')}
-                  onChangeText={handleChange('email')}
-                />
-                {touched.email && errors.email && (
-                  <Text style={styles.errorText}>{errors.email}</Text>
-                )}
-                <Input
-                  keyboardType={'number-pad'}
-                  label={'Phone Number'}
-                  onBlur={() => setFieldTouched('phone_number')}
-                  onChangeText={handleChange('phone_number')}
-                />
-                {touched.phone_number && errors.phone_number && (
-                  <Text style={styles.errorText}>{errors.phone_number}</Text>
-                )}
-                <Input
-                  label={'Password'}
-                  secureTextEntry={true}
-                  onBlur={() => setFieldTouched('password')}
-                  onChangeText={handleChange('password')}
-                />
-                {touched.password && errors.password && (
-                  <Text style={styles.errorText}>{errors.password}</Text>
-                )}
-                <Input
-                  label={'Confirm Password'}
-                  secureTextEntry={true}
-                  onBlur={() => setFieldTouched('confirm_password')}
-                  onChangeText={handleChange('confirm_password')}
-                />
-                {touched.confirm_password && errors.confirm_password && (
-                  <Text style={styles.errorText}>
-                    {errors.confirm_password}
+              }}>
+              {({
+                touched,
+                errors,
+                setFieldTouched,
+                handleChange,
+                handleSubmit,
+                isValid,
+              }) => (
+                <>
+                  <Header type={1} center={true}>
+                    SIGN UP
+                  </Header>
+                  <Text style={styles.instructions}>
+                    Fields labeled (Japanese) are not forced. You may enter
+                    English instead.
                   </Text>
-                )}
-                <Button
-                  isDisabled={!isValid}
-                  title={'SIGN UP'}
-                  onPress={handleSubmit}
-                />
-              </>
-            )}
-          </Formik>
-        </View>
-      </ScrollView>
-      <Toast />
-    </SafeAreaView>
+                  <Input
+                    label={'First Name'}
+                    onBlur={() => setFieldTouched('first_name_en')}
+                    onChangeText={handleChange('first_name_en')}
+                  />
+                  {touched.first_name_en && errors.first_name_en && (
+                    <Text style={styles.errorText}>{errors.first_name_en}</Text>
+                  )}
+                  <Input
+                    label={'Last Name'}
+                    onBlur={() => setFieldTouched('last_name_en')}
+                    onChangeText={handleChange('last_name_en')}
+                  />
+                  {touched.last_name_en && errors.last_name_en && (
+                    <Text style={styles.errorText}>{errors.last_name_en}</Text>
+                  )}
+                  <Input
+                    label={'First Name (Japanese)'}
+                    onBlur={() => setFieldTouched('first_name_jp')}
+                    onChangeText={handleChange('first_name_jp')}
+                  />
+                  {touched.first_name_jp && errors.first_name_jp && (
+                    <Text style={styles.errorText}>{errors.first_name_jp}</Text>
+                  )}
+                  <Input
+                    label={'Last Name (Japanese)'}
+                    onBlur={() => setFieldTouched('last_name_jp')}
+                    onChangeText={handleChange('last_name_jp')}
+                  />
+                  {touched.last_name_jp && errors.last_name_jp && (
+                    <Text style={styles.errorText}>{errors.last_name_jp}</Text>
+                  )}
+                  <Input
+                    keyboardType={'email-address'}
+                    label={'Email'}
+                    onBlur={() => setFieldTouched('email')}
+                    onChangeText={handleChange('email')}
+                  />
+                  {touched.email && errors.email && (
+                    <Text style={styles.errorText}>{errors.email}</Text>
+                  )}
+                  <Input
+                    keyboardType={'number-pad'}
+                    label={'Phone Number'}
+                    onBlur={() => setFieldTouched('phone_number')}
+                    onChangeText={handleChange('phone_number')}
+                  />
+                  {touched.phone_number && errors.phone_number && (
+                    <Text style={styles.errorText}>{errors.phone_number}</Text>
+                  )}
+                  <Input
+                    label={'Password'}
+                    secureTextEntry={true}
+                    onBlur={() => setFieldTouched('password')}
+                    onChangeText={handleChange('password')}
+                  />
+                  {touched.password && errors.password && (
+                    <Text style={styles.errorText}>{errors.password}</Text>
+                  )}
+                  <Input
+                    label={'Confirm Password'}
+                    secureTextEntry={true}
+                    onBlur={() => setFieldTouched('confirm_password')}
+                    onChangeText={handleChange('confirm_password')}
+                  />
+                  {touched.confirm_password && errors.confirm_password && (
+                    <Text style={styles.errorText}>
+                      {errors.confirm_password}
+                    </Text>
+                  )}
+                  <Button
+                    isDisabled={!isValid}
+                    title={'SIGN UP'}
+                    onPress={handleSubmit}
+                  />
+                </>
+              )}
+            </Formik>
+          </View>
+        </ScrollView>
+        <Toast />
+      </SafeAreaView>
+    </View>
   );
 }
 

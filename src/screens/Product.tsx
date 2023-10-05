@@ -562,7 +562,7 @@ function Product(): JSX.Element {
                     <Image
                       style={styles.image}
                       source={{
-                        uri: `https://pf.8dotz.com/images/products/${values.image_path_1}`,
+                        uri: `${BASE_URL}/images/products/${values.image_path_1}`,
                       }}
                     />
                   ) : null}
@@ -595,7 +595,7 @@ function Product(): JSX.Element {
                     <Image
                       style={styles.image}
                       source={{
-                        uri: `https://pf.8dotz.com/images/products/${values.image_path_2}`,
+                        uri: `${BASE_URL}/images/products/${values.image_path_2}`,
                       }}
                     />
                   ) : null}

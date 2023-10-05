@@ -16,6 +16,7 @@ import {faUser} from '@fortawesome/free-solid-svg-icons';
 import type {DashboardScreenNavigationProp} from '../types/navigation';
 import type {RootState} from '../redux/store';
 
+import {BASE_URL} from '../constants/config';
 import {horizontalScale, verticalScale, scaleFontSize} from '../util/scaling';
 import Header from '../components/ui/Header';
 import Button from '../components/ui/Button';
@@ -138,7 +139,7 @@ function Dashboard(): JSX.Element {
                         style={styles.image}
                         resizeMode="cover"
                         source={{
-                          uri: `https://pf.8dotz.com/images/products/${item.image_path_1}`,
+                          uri: `${BASE_URL}/images/products/${item.image_path_1}`,
                         }}
                       />
                     </View>

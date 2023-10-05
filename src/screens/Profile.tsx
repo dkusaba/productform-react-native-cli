@@ -21,6 +21,7 @@ import {faSignOut, faChevronLeft} from '@fortawesome/free-solid-svg-icons';
 
 import type {ProfileScreenNavigationProp} from '../types/navigation';
 import type {RootState} from '../redux/store';
+import {BASE_URL} from '../constants/config';
 import LoadingOverlay from '../components/ui/LoadingOverlay';
 import Header from '../components/ui/Header';
 import Input from '../components/ui/Input';
@@ -281,7 +282,7 @@ function Profile(): JSX.Element {
                       <Image
                         style={styles.image}
                         source={{
-                          uri: `https://pf.8dotz.com/images/company-logo/${values.co_logo_path}`,
+                          uri: `${BASE_URL}/images/company-logo/${values.co_logo_path}`,
                         }}
                       />
                     ) : null}

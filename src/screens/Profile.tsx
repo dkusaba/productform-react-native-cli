@@ -9,12 +9,12 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import Toast from 'react-native-toast-message';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faSignOut, faChevronLeft} from '@fortawesome/free-solid-svg-icons';
@@ -158,13 +158,10 @@ function Profile(): JSX.Element {
               validationSchema={ProfileSchema}
               onSubmit={async values => {
                 setIsLoading(true);
+
                 if (values.co_logo_path === '' || imageFormData === '') {
-                  Toast.show({
-                    type: 'error',
-                    text1: 'Please select your company logo',
-                    visibilityTime: 3000,
-                    position: 'bottom',
-                  });
+                  Alert.alert('Please select your company logo');
+                  setIsLoading(false);
                   return;
                 }
 
@@ -204,16 +201,8 @@ function Profile(): JSX.Element {
                 if (response && response.status === 200) {
                   dispatch(updateProfile(response.data));
                   setIsLoading(false);
-                }
-                Toast.show({
-                  type: 'success',
-                  text1: 'Profile updated successfully',
-                  visibilityTime: 3000,
-                  position: 'bottom',
-                });
-                setTimeout(() => {
                   navigation.navigate('Dashboard');
-                }, 500);
+                }
               }}>
               {({
                 values,
@@ -425,7 +414,6 @@ function Profile(): JSX.Element {
             </Formik>
           </View>
         </ScrollView>
-        <Toast />
       </SafeAreaView>
     </View>
   );

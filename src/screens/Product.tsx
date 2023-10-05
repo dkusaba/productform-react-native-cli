@@ -14,7 +14,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {launchImageLibrary} from 'react-native-image-picker';
-import Toast from 'react-native-toast-message';
 import {Dropdown, MultiSelect} from 'react-native-element-dropdown';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faSquare, faSquareCheck} from '@fortawesome/free-regular-svg-icons';
@@ -345,30 +344,14 @@ function Product(): JSX.Element {
                     console.log('response', response);
                     dispatch(updateProduct(response));
                     setIsLoading(false);
-                    Toast.show({
-                      type: 'success',
-                      text1: 'Product updated successfully',
-                      visibilityTime: 3000,
-                      position: 'bottom',
-                    });
-                    setTimeout(() => {
-                      navigation.navigate('Dashboard');
-                    }, 500);
+                    navigation.navigate('Dashboard');
                   }
                 } else {
                   response = await productCreate(user.token, formData);
                   if (response) {
                     dispatch(addProduct(response.product));
                     setIsLoading(false);
-                    Toast.show({
-                      type: 'success',
-                      text1: 'Product created successfully',
-                      visibilityTime: 3000,
-                      position: 'bottom',
-                    });
-                    setTimeout(() => {
-                      navigation.navigate('Dashboard');
-                    }, 500);
+                    navigation.navigate('Dashboard');
                   }
                 }
               }}>
@@ -1257,7 +1240,6 @@ function Product(): JSX.Element {
             </Formik>
           </View>
         </ScrollView>
-        <Toast />
       </SafeAreaView>
     </View>
   );

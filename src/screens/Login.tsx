@@ -55,6 +55,7 @@ function Login(): JSX.Element {
       navigation.navigate('Dashboard');
     } else {
       Alert.alert('Login failed', 'Invalid credentials. Please try again');
+      setIsLoading(false);
     }
   }
 

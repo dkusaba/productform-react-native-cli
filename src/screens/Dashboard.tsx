@@ -1,27 +1,24 @@
 import React, {useEffect} from 'react';
 import {
-  Image,
   Pressable,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faEdit} from '@fortawesome/free-regular-svg-icons';
 import {faUser} from '@fortawesome/free-solid-svg-icons';
 import type {DashboardScreenNavigationProp} from '../types/navigation';
 import type {RootState} from '../redux/store';
 
-import {BASE_URL} from '../constants/config';
+import {Colors} from '../constants/colors';
 import {horizontalScale, verticalScale, scaleFontSize} from '../util/scaling';
 import Header from '../components/ui/Header';
 import Button from '../components/ui/Button';
-import {ScrollView} from 'react-native-gesture-handler';
-import {Colors} from '../constants/colors';
+import ProductsList from '../components/products/ProductsList';
 
 function Dashboard(): JSX.Element {
   const navigation = useNavigation<DashboardScreenNavigationProp>();
@@ -120,46 +117,8 @@ function Dashboard(): JSX.Element {
             </Text>
           ) : null}
           {products.items.length ? (
-            <View style={styles.regProductContainer}>
-              <Header type={2}>REGISTERED PRODUCTS</Header>
-            </View>
+            <ProductsList data={products.items} />
           ) : null}
-          {products.items.length
-            ? products.items.map(item => (
-                <View key={item.id}>
-                  <TouchableOpacity
-                    style={styles.product}
-                    onPress={() => {
-                      navigation.navigate('Product', {
-                        product: item,
-                      });
-                    }}>
-                    <View style={styles.imageContainer}>
-                      <Image
-                        style={styles.image}
-                        resizeMode="cover"
-                        source={{
-                          uri: `${BASE_URL}/images/products/${item.image_path_1}`,
-                        }}
-                      />
-                    </View>
-                    <View style={styles.nameContainer}>
-                      <Text numberOfLines={1} style={styles.name}>
-                        {item.name_en}
-                      </Text>
-                    </View>
-                    <View style={styles.iconContainer}>
-                      <FontAwesomeIcon
-                        icon={faEdit}
-                        size={20}
-                        color={Colors.grayPrimary}
-                      />
-                      <Text style={styles.iconText}>EDIT</Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              ))
-            : null}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -190,11 +149,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins',
     fontSize: scaleFontSize(14),
     color: Colors.grayPrimary,
-  },
-  regProductContainer: {
-    marginTop: verticalScale(20),
-    borderTopWidth: 1,
-    borderTopColor: Colors.gray600,
   },
   product: {
     marginTop: verticalScale(5),
